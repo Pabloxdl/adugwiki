@@ -4,527 +4,218 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Cubic RPG Wiki</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <!--
-  NOTE FOR GITHUB PAGES:
-  Drop your 8bitoperatorJVE.ttf (and Bold variant) into the same folder as index.html.
-  The @font-face below will load it automatically.
-  If the file is missing it falls back to "Press Start 2P" (loaded from Google Fonts).
+  Put 8bitoperatorJVE.ttf (and Bold) in the same folder as index.html for GitHub Pages.
+  Falls back to Press Start 2P from Google Fonts if not found.
 -->
 <style>
-/* ═══════════════════════════════
-   8-BIT FONT
-═══════════════════════════════ */
-@font-face {
-  font-family:'8bit';
-  src:url('8bitoperatorJVE.ttf') format('truetype');
-  font-weight:normal;
-}
-@font-face {
-  font-family:'8bit';
-  src:url('8bitoperatorJVE-Bold.ttf') format('truetype');
-  font-weight:bold;
-}
+@font-face{font-family:'8bit';src:url('8bitoperatorJVE.ttf') format('truetype');font-weight:normal;}
+@font-face{font-family:'8bit';src:url('8bitoperatorJVE-Bold.ttf') format('truetype');font-weight:bold;}
 
-/* ═══════════════════════════════
-   DESIGN TOKENS
-═══════════════════════════════ */
 :root{
   --bg:#000;
   --fg:#fff;
-  --muted:#777;
-  --dim:#222;
-  --dim2:#444;
+  --muted:#666;
+  --dim:#1a1a1a;
+  --dim2:#333;
   --bw:3px;
   --font:'8bit','Press Start 2P',monospace;
 }
 
-/* ═══════════════════════════════
-   RESET
-═══════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{
-  background:var(--bg);
-  color:var(--fg);
-  font-family:var(--font);
-  font-size:10px;
-  line-height:1.8;
-  overflow-x:hidden;
-  image-rendering:pixelated;
+  background:var(--bg);color:var(--fg);
+  font-family:var(--font);font-size:10px;line-height:1.8;
+  overflow-x:hidden;image-rendering:pixelated;
 }
 ::-webkit-scrollbar{width:5px;background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--fg);}
 a{color:var(--fg);text-decoration:none;}
 a:hover{text-decoration:underline;}
 input,textarea,select{
-  font-family:var(--font);
-  background:var(--bg);
-  color:var(--fg);
-  border:var(--bw) solid var(--fg);
-  outline:none;
-  padding:.5rem .7rem;
-  font-size:9px;
+  font-family:var(--font);background:var(--bg);color:var(--fg);
+  border:var(--bw) solid var(--fg);outline:none;
+  padding:.5rem .7rem;font-size:9px;
 }
-input:focus,textarea:focus,select:focus{
-  box-shadow:0 0 0 2px var(--fg);
-}
-button{font-family:var(--font);}
+input:focus,textarea:focus,select:focus{box-shadow:0 0 0 2px var(--fg);}
+button{font-family:var(--font);cursor:pointer;}
 
 /* scanlines */
 body::after{
-  content:'';
-  position:fixed;inset:0;
-  background:repeating-linear-gradient(
-    0deg,transparent,transparent 3px,
-    rgba(255,255,255,.018) 3px,rgba(255,255,255,.018) 4px
-  );
-  pointer-events:none;
+  content:'';position:fixed;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,.015) 3px,rgba(255,255,255,.015) 4px);
   z-index:9999;
 }
-
-/* pixel-grid bg (only on menu) */
 .pixel-grid::before{
-  content:'';
-  position:fixed;inset:0;
-  background-image:
-    linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
-  background-size:16px 16px;
-  pointer-events:none;
-  z-index:0;
+  content:'';position:fixed;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:16px 16px;z-index:0;
 }
 
-/* ═══════════════════════════════
-   PAGE SYSTEM
-═══════════════════════════════ */
+/* ── PAGE SYSTEM ── */
 .page{display:none;}
 .page.active{display:block;}
 
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   ░▓ MAIN MENU ▓░
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-#page-menu{
-  min-height:100vh;
-  display:none;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  position:relative;
-  padding:2rem;
-}
+/* ════════════════════════════════
+   MAIN MENU
+════════════════════════════════ */
+#page-menu{min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;position:relative;padding:2rem;}
 #page-menu.active{display:flex;}
 
-/* isometric cube decoration */
-.cube-iso{
-  position:relative;
-  width:72px;height:72px;
-  margin:0 auto 2.5rem;
-  animation:bob 3s ease-in-out infinite;
-}
-.cube-iso .face-top{
-  position:absolute;
-  width:72px;height:72px;
-  border:var(--bw) solid var(--fg);
-  transform:rotate(45deg) scaleX(.57) translateY(-50%);
-  background:var(--dim);
-  top:0;left:0;
-}
-.cube-iso .face-left{
-  position:absolute;
-  width:36px;height:36px;
-  border:var(--bw) solid var(--fg);
-  background:#111;
-  bottom:0;left:0;
-  clip-path:polygon(0 0,100% 0,100% 100%,0 100%);
-}
-.cube-iso .face-right{
-  position:absolute;
-  width:36px;height:36px;
-  border:var(--bw) solid var(--fg);
-  background:var(--dim);
-  bottom:0;right:0;
-}
-@keyframes bob{
-  0%,100%{transform:translateY(0);}
-  50%{transform:translateY(-10px);}
-}
+.cube-iso{position:relative;width:72px;height:72px;margin:0 auto 2.5rem;animation:bob 3s ease-in-out infinite;}
+.cube-iso .f-top{position:absolute;width:72px;height:72px;border:var(--bw) solid var(--fg);transform:rotate(45deg) scaleX(.57) translateY(-50%);background:var(--dim);top:0;left:0;}
+.cube-iso .f-left{position:absolute;width:36px;height:36px;border:var(--bw) solid var(--fg);background:#0a0a0a;bottom:0;left:0;}
+.cube-iso .f-right{position:absolute;width:36px;height:36px;border:var(--bw) solid var(--fg);background:var(--dim);bottom:0;right:0;}
+@keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
 
-.menu-logo{
-  font-size:clamp(12px,2.5vw,22px);
-  letter-spacing:.14em;
-  text-transform:uppercase;
-  text-align:center;
-  line-height:1.5;
-  margin-bottom:2.5rem;
-  position:relative;z-index:1;
-}
-.menu-logo .sub{
-  display:block;
-  font-size:7px;
-  color:var(--muted);
-  letter-spacing:.25em;
-  margin-top:.7rem;
-}
+.menu-logo{font-size:clamp(12px,2.5vw,22px);letter-spacing:.14em;text-transform:uppercase;text-align:center;line-height:1.5;margin-bottom:2.5rem;position:relative;z-index:1;}
+.menu-logo .sub{display:block;font-size:7px;color:var(--muted);letter-spacing:.25em;margin-top:.7rem;}
 
-.menu-nav{
-  display:flex;
-  flex-direction:column;
-  gap:2px;
-  width:280px;
-  position:relative;z-index:1;
-}
-.menu-btn{
-  background:var(--bg);
-  color:var(--fg);
-  border:var(--bw) solid var(--fg);
-  padding:.9rem 1.3rem;
-  font-family:var(--font);
-  font-size:9px;
-  letter-spacing:.1em;
-  text-transform:uppercase;
-  text-align:left;
-  cursor:pointer;
-  transition:background .08s,color .08s;
-}
+.menu-nav{display:flex;flex-direction:column;gap:2px;width:280px;position:relative;z-index:1;}
+.menu-btn{background:var(--bg);color:var(--fg);border:var(--bw) solid var(--fg);padding:.9rem 1.3rem;font-family:var(--font);font-size:9px;letter-spacing:.1em;text-transform:uppercase;text-align:left;transition:background .08s,color .08s;}
 .menu-btn:hover{background:var(--fg);color:var(--bg);}
 
-.menu-version{
-  position:fixed;bottom:1rem;right:1.2rem;
-  font-size:7px;color:var(--muted);letter-spacing:.1em;
-  z-index:1;
-}
+.menu-version{position:fixed;bottom:1rem;right:1.2rem;font-size:7px;color:var(--muted);letter-spacing:.1em;z-index:1;}
 
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   ░▓ WIKI LAYOUT ▓░
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ════════════════════════════════
+   WIKI
+════════════════════════════════ */
 #page-wiki{min-height:100vh;display:none;flex-direction:column;}
 #page-wiki.active{display:flex;}
 
-/* TOPBAR */
-.topbar{
-  position:sticky;top:0;z-index:200;
-  background:var(--bg);
-  border-bottom:var(--bw) solid var(--fg);
-  display:flex;align-items:center;gap:1rem;
-  padding:.6rem 1.4rem;
-  flex-wrap:wrap;
-}
-.tb-logo{
-  font-size:9px;letter-spacing:.14em;
-  text-transform:uppercase;cursor:pointer;
-  white-space:nowrap;
-}
-.tb-logo:hover{opacity:.65;}
-.tb-nav{display:flex;gap:.5rem;flex-wrap:wrap;flex:1;}
-.tb-nav button{
-  background:none;border:none;cursor:pointer;
-  color:var(--muted);
-  font-family:var(--font);font-size:7px;
-  letter-spacing:.1em;text-transform:uppercase;
-  padding:.3rem .5rem;
-  border:var(--bw) solid transparent;
-}
-.tb-nav button:hover,
-.tb-nav button.anav{
-  color:var(--fg);
-  border:var(--bw) solid var(--fg);
-}
+/* topbar */
+.topbar{position:sticky;top:0;z-index:200;background:var(--bg);border-bottom:var(--bw) solid var(--fg);display:flex;align-items:center;gap:.8rem;padding:.6rem 1.2rem;flex-wrap:wrap;}
+.tb-logo{font-size:9px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;white-space:nowrap;}
+.tb-logo:hover{opacity:.6;}
+.tb-nav{display:flex;gap:3px;flex-wrap:wrap;flex:1;min-width:0;}
+.tb-nav button{background:none;border:var(--bw) solid transparent;color:var(--muted);font-family:var(--font);font-size:7px;letter-spacing:.08em;text-transform:uppercase;padding:.3rem .5rem;}
+.tb-nav button:hover,.tb-nav button.anav{color:var(--fg);border:var(--bw) solid var(--fg);}
 .tb-search{display:flex;gap:3px;margin-left:auto;}
-.tb-search input{width:150px;font-size:8px;padding:.35rem .6rem;border-width:var(--bw);}
-.tb-search button{
-  background:var(--fg);color:var(--bg);
-  border:var(--bw) solid var(--fg);
-  font-family:var(--font);font-size:8px;
-  padding:.35rem .7rem;cursor:pointer;
-}
+.tb-search input{width:140px;font-size:8px;padding:.35rem .6rem;}
+.tb-search button{background:var(--fg);color:var(--bg);border:var(--bw) solid var(--fg);font-family:var(--font);font-size:8px;padding:.35rem .7rem;}
 .tb-search button:hover{background:var(--dim);color:var(--fg);}
 
-/* BODY */
+/* layout */
 .wiki-body{display:flex;flex:1;align-items:flex-start;}
-
-/* SIDEBAR */
-.wiki-side{
-  width:192px;flex-shrink:0;
-  border-right:var(--bw) solid var(--fg);
-  min-height:calc(100vh - 52px);
-  position:sticky;top:52px;
-  overflow-y:auto;max-height:calc(100vh - 52px);
-  padding:.8rem 0;
-}
-.ws-head{
-  padding:.4rem 1rem .25rem;
-  font-size:6px;color:var(--muted);
-  letter-spacing:.2em;text-transform:uppercase;
-  border-bottom:1px solid var(--dim);
-  margin-bottom:.2rem;
-}
-.wiki-side a{
-  display:block;padding:.4rem 1rem;
-  font-size:7px;color:var(--muted);
-  letter-spacing:.07em;text-transform:uppercase;
-  border-left:3px solid transparent;
-}
-.wiki-side a:hover,.wiki-side a.alink{
-  color:var(--fg);border-left:3px solid var(--fg);
-  text-decoration:none;
-}
-
-/* MAIN */
+.wiki-side{width:192px;flex-shrink:0;border-right:var(--bw) solid var(--fg);min-height:calc(100vh - 52px);position:sticky;top:52px;overflow-y:auto;max-height:calc(100vh - 52px);padding:.8rem 0;}
+.ws-head{padding:.4rem 1rem .25rem;font-size:6px;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;border-bottom:1px solid var(--dim2);margin-bottom:.2rem;}
+.wiki-side a{display:block;padding:.4rem 1rem;font-size:7px;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;border-left:3px solid transparent;}
+.wiki-side a:hover,.wiki-side a.alink{color:var(--fg);border-left:3px solid var(--fg);text-decoration:none;}
 .wiki-main{flex:1;padding:1.8rem 2rem;min-width:0;}
 
-/* SECTIONS */
+/* sections */
 .wiki-sec{display:none;}
 .wiki-sec.active{display:block;}
+.sec-title{font-size:11px;letter-spacing:.12em;text-transform:uppercase;border-bottom:var(--bw) solid var(--fg);padding-bottom:.8rem;margin-bottom:1.8rem;}
+.sec-sub{font-size:8px;color:var(--muted);letter-spacing:.13em;text-transform:uppercase;margin:1.8rem 0 .9rem;}
 
-/* HEADINGS */
-.sec-title{
-  font-size:11px;letter-spacing:.12em;text-transform:uppercase;
-  border-bottom:var(--bw) solid var(--fg);
-  padding-bottom:.8rem;margin-bottom:1.8rem;
-}
-.sec-sub{
-  font-size:8px;color:var(--muted);letter-spacing:.13em;
-  text-transform:uppercase;margin:1.8rem 0 .9rem;
-}
-
-/* STATS BAR */
-.stats-bar{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(90px,1fr));
-  border:var(--bw) solid var(--fg);
-  margin-bottom:1.8rem;
-  gap:0;
-  background:var(--fg); /* white gaps */
-}
-.stat-c{
-  background:var(--bg);
-  padding:1rem .8rem;text-align:center;
-}
+/* stats */
+.stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));border:var(--bw) solid var(--fg);margin-bottom:1.8rem;background:var(--fg);}
+.stat-c{background:var(--bg);padding:1rem .8rem;text-align:center;}
 .stat-n{display:block;font-size:16px;margin-bottom:.3rem;}
 .stat-l{font-size:6px;color:var(--muted);letter-spacing:.13em;text-transform:uppercase;}
 
-/* CARD GRID */
-.card-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-  gap:0;
-  border:var(--bw) solid var(--fg);
-  background:var(--fg);
-  margin-bottom:1.8rem;
-}
-.wcard{
-  background:var(--bg);
-  padding:1.2rem;cursor:pointer;
-  transition:background .08s;
-  position:relative;
-}
+/* card grid */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:0;border:var(--bw) solid var(--fg);background:var(--fg);margin-bottom:1.8rem;}
+.wcard{background:var(--bg);padding:1.2rem;cursor:pointer;transition:background .08s;}
 .wcard:hover{background:#0e0e0e;}
-.wcard .wc-cat{font-size:6px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.4rem;}
-.wcard .wc-title{font-size:9px;letter-spacing:.07em;margin-bottom:.5rem;}
-.wcard .wc-desc{font-size:7px;color:var(--muted);line-height:1.75;}
-.wcard .wc-img{
-  width:100%;aspect-ratio:16/9;
-  object-fit:cover;
-  border:var(--bw) solid var(--dim);
-  margin-bottom:.7rem;
-  image-rendering:pixelated;
-}
-.wcard .wc-nimg{
-  width:100%;aspect-ratio:16/9;
-  background:var(--dim);
-  border:var(--bw) solid var(--dim2);
-  margin-bottom:.7rem;
-  display:flex;align-items:center;justify-content:center;
-  font-size:6px;color:var(--muted);letter-spacing:.1em;
-}
-.empty-note{
-  padding:2rem;font-size:8px;color:var(--muted);
-  letter-spacing:.1em;border:var(--bw) solid var(--dim);
-  margin-bottom:1.8rem;
-}
+.wc-icon{font-size:18px;margin-bottom:.5rem;display:block;}
+.wc-cat{font-size:6px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem;}
+.wc-title{font-size:9px;letter-spacing:.07em;margin-bottom:.4rem;}
+.wc-desc{font-size:7px;color:var(--muted);line-height:1.75;}
+.wc-img{width:100%;aspect-ratio:16/9;object-fit:cover;border:var(--bw) solid var(--dim);margin-bottom:.7rem;image-rendering:pixelated;}
+.wc-nimg{width:100%;aspect-ratio:16/9;background:var(--dim);border:var(--bw) solid var(--dim2);margin-bottom:.7rem;display:flex;align-items:center;justify-content:center;font-size:6px;color:var(--muted);letter-spacing:.1em;}
 
-/* ARTICLE */
+/* empty state */
+.empty-state{border:var(--bw) dashed var(--dim2);padding:3rem 2rem;text-align:center;margin-bottom:1.8rem;}
+.empty-state .es-icon{font-size:28px;margin-bottom:1rem;display:block;}
+.empty-state .es-title{font-size:9px;letter-spacing:.1em;margin-bottom:.6rem;}
+.empty-state .es-sub{font-size:7px;color:var(--muted);letter-spacing:.08em;line-height:1.8;}
+
+/* article */
 .article-view{display:none;}
 .article-view.active{display:block;animation:fin .12s ease;}
 @keyframes fin{from{opacity:0}to{opacity:1}}
-.art-back{
-  background:none;border:var(--bw) solid var(--fg);
-  color:var(--fg);font-family:var(--font);font-size:8px;
-  padding:.4rem .9rem;letter-spacing:.1em;cursor:pointer;
-  margin-bottom:1.4rem;
-  display:inline-block;
-}
+.art-back{background:none;border:var(--bw) solid var(--fg);color:var(--fg);font-family:var(--font);font-size:8px;padding:.4rem .9rem;letter-spacing:.1em;cursor:pointer;margin-bottom:1.4rem;display:inline-block;}
 .art-back:hover{background:var(--fg);color:var(--bg);}
-.art-head{
-  border:var(--bw) solid var(--fg);
-  padding:1.4rem;margin-bottom:1.4rem;
-}
+.art-head{border:var(--bw) solid var(--fg);padding:1.4rem;margin-bottom:1.4rem;}
 .art-meta{font-size:6px;color:var(--muted);letter-spacing:.12em;margin-bottom:.4rem;}
 .art-h1{font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.6rem;}
-.art-tag{
-  display:inline-block;font-size:6px;
-  border:1px solid var(--fg);padding:.1rem .4rem;
-  letter-spacing:.1em;text-transform:uppercase;margin-right:.3rem;margin-bottom:.2rem;
-}
-.art-img{
-  width:100%;max-height:300px;object-fit:cover;
-  border:var(--bw) solid var(--fg);
-  image-rendering:pixelated;margin-bottom:1.4rem;
-}
-.art-nimg{
-  width:100%;height:180px;
-  background:var(--dim);border:var(--bw) solid var(--fg);
-  display:flex;align-items:center;justify-content:center;
-  font-size:7px;color:var(--muted);margin-bottom:1.4rem;
-}
-.art-body{
-  font-size:8px;line-height:2.1;color:#ccc;
-  white-space:pre-wrap;
-  border-left:var(--bw) solid var(--fg);
-  padding-left:1.2rem;
-}
+.art-tag{display:inline-block;font-size:6px;border:1px solid var(--fg);padding:.1rem .4rem;letter-spacing:.1em;text-transform:uppercase;margin-right:.3rem;margin-bottom:.2rem;}
+.art-img{width:100%;max-height:300px;object-fit:cover;border:var(--bw) solid var(--fg);image-rendering:pixelated;margin-bottom:1.4rem;}
+.art-nimg{width:100%;height:160px;background:var(--dim);border:var(--bw) solid var(--fg);display:flex;align-items:center;justify-content:center;font-size:7px;color:var(--muted);margin-bottom:1.4rem;}
+.art-body{font-size:8px;line-height:2.1;color:#ccc;white-space:pre-wrap;border-left:var(--bw) solid var(--fg);padding-left:1.2rem;}
 
-/* SEARCH RESULTS */
+/* search */
 #search-panel{display:none;}
 #search-panel.active{display:block;}
-.sres-item{
-  border:var(--bw) solid var(--fg);
-  padding:.8rem 1rem;margin-bottom:1px;
-  cursor:pointer;display:flex;align-items:center;gap:.9rem;
-}
+.sres-item{border:var(--bw) solid var(--fg);padding:.8rem 1rem;margin-bottom:1px;cursor:pointer;display:flex;align-items:center;gap:.9rem;}
 .sres-item:hover{background:#0e0e0e;}
-.sres-thumb{
-  width:60px;height:38px;flex-shrink:0;
-  object-fit:cover;border:1px solid var(--dim);image-rendering:pixelated;
-}
-.sres-nthumb{
-  width:60px;height:38px;flex-shrink:0;
-  background:var(--dim);border:1px solid var(--dim2);
-  display:flex;align-items:center;justify-content:center;
-  font-size:5px;color:var(--muted);
-}
+.sres-thumb{width:60px;height:38px;flex-shrink:0;object-fit:cover;border:1px solid var(--dim);image-rendering:pixelated;}
+.sres-nthumb{width:60px;height:38px;flex-shrink:0;background:var(--dim);border:1px solid var(--dim2);display:flex;align-items:center;justify-content:center;font-size:5px;color:var(--muted);}
 .sres-title{font-size:8px;letter-spacing:.07em;margin-bottom:.25rem;}
 .sres-cat{font-size:6px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
 .sres-none{padding:2.5rem;font-size:8px;color:var(--muted);letter-spacing:.12em;text-align:center;}
 
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   ░▓ ADMIN PAGE ▓░
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ════════════════════════════════
+   ADMIN
+════════════════════════════════ */
 #page-admin{min-height:100vh;display:none;}
 #page-admin.active{display:block;}
 
-/* LOGIN */
-.login-wrap{
-  min-height:100vh;display:flex;
-  align-items:center;justify-content:center;
-}
-.login-box{
-  border:var(--bw) solid var(--fg);
-  padding:2.5rem 2rem;width:300px;text-align:center;
-}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.login-box{border:var(--bw) solid var(--fg);padding:2.5rem 2rem;width:300px;text-align:center;}
 .login-title{font-size:10px;letter-spacing:.15em;margin-bottom:1.8rem;}
-.login-box .fr{text-align:left;margin-bottom:1rem;}
-.login-lbl{display:block;font-size:6px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.35rem;}
 .login-err{font-size:7px;color:#f44;letter-spacing:.1em;margin-bottom:.7rem;display:none;}
 
-/* ADMIN TOPBAR */
-.adm-top{
-  background:var(--bg);border-bottom:var(--bw) solid var(--fg);
-  display:flex;align-items:center;gap:.6rem;
-  padding:.6rem 1.4rem;flex-wrap:wrap;
-}
-.adm-top-logo{font-size:8px;letter-spacing:.13em;text-transform:uppercase;margin-right:.4rem;}
-.adm-tbtn{
-  background:none;border:var(--bw) solid var(--fg);
-  color:var(--fg);font-family:var(--font);font-size:7px;
-  padding:.3rem .7rem;letter-spacing:.1em;cursor:pointer;
-}
+.adm-top{background:var(--bg);border-bottom:var(--bw) solid var(--fg);display:flex;align-items:center;gap:.5rem;padding:.6rem 1.2rem;flex-wrap:wrap;}
+.adm-top-logo{font-size:8px;letter-spacing:.13em;text-transform:uppercase;margin-right:.4rem;white-space:nowrap;}
+.adm-tbtn{background:none;border:var(--bw) solid var(--fg);color:var(--fg);font-family:var(--font);font-size:7px;padding:.3rem .65rem;letter-spacing:.08em;}
 .adm-tbtn:hover{background:var(--fg);color:var(--bg);}
 .adm-logout{margin-left:auto!important;}
 
-/* ADMIN BODY */
 .adm-body{display:flex;min-height:calc(100vh - 50px);}
-.adm-side{
-  width:180px;flex-shrink:0;
-  border-right:var(--bw) solid var(--fg);
-  padding:.8rem 0;
-}
-.adm-side button{
-  display:block;width:100%;
-  background:none;border:none;border-left:3px solid transparent;
-  color:var(--muted);font-family:var(--font);font-size:7px;
-  padding:.55rem 1rem;text-align:left;letter-spacing:.08em;
-  text-transform:uppercase;cursor:pointer;
-}
-.adm-side button:hover,.adm-side button.atab{
-  color:var(--fg);border-left:3px solid var(--fg);
-}
-.adm-divider{border-top:1px solid var(--dim);margin:.7rem 0;}
+.adm-side{width:175px;flex-shrink:0;border-right:var(--bw) solid var(--fg);padding:.8rem 0;}
+.adm-side .aside-head{padding:.4rem 1rem .25rem;font-size:6px;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;border-bottom:1px solid var(--dim2);margin-bottom:.2rem;}
+.adm-side button{display:block;width:100%;background:none;border:none;border-left:3px solid transparent;color:var(--muted);font-family:var(--font);font-size:7px;padding:.55rem 1rem;text-align:left;letter-spacing:.08em;text-transform:uppercase;}
+.adm-side button:hover,.adm-side button.atab{color:var(--fg);border-left:3px solid var(--fg);}
+.adm-divider{border-top:1px solid var(--dim2);margin:.6rem 0;}
 .adm-main{flex:1;padding:1.8rem 2rem;min-width:0;}
-
-/* ADMIN PANELS */
 .adm-panel{display:none;}
 .adm-panel.active{display:block;}
 
-/* FORM */
+/* forms */
 .fr{margin-bottom:1.1rem;}
 .flbl{display:block;font-size:6px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.35rem;}
 .finput{width:100%;font-size:9px;}
 .ftextarea{width:100%;min-height:150px;resize:vertical;font-size:9px;line-height:1.75;}
 .fselect{width:100%;font-size:9px;padding:.45rem .6rem;}
-
-.drop-area{
-  border:var(--bw) dashed var(--dim2);
-  padding:1.8rem;text-align:center;
-  font-size:7px;color:var(--muted);letter-spacing:.1em;
-  cursor:pointer;position:relative;
-  transition:border-color .12s,color .12s;
-}
+.drop-area{border:var(--bw) dashed var(--dim2);padding:1.6rem;text-align:center;font-size:7px;color:var(--muted);letter-spacing:.1em;cursor:pointer;position:relative;transition:border-color .12s,color .12s;}
 .drop-area:hover{border-color:var(--fg);color:var(--fg);}
-.drop-area input[type=file]{
-  position:absolute;inset:0;opacity:0;cursor:pointer;border:none;
-}
-.img-prev{
-  max-width:280px;border:var(--bw) solid var(--fg);
-  margin-top:.9rem;image-rendering:pixelated;
-}
+.drop-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;border:none;}
+.img-prev{max-width:260px;border:var(--bw) solid var(--fg);margin-top:.9rem;image-rendering:pixelated;}
 
-/* BUTTONS */
-.btn-primary{
-  background:var(--fg);color:var(--bg);
-  border:var(--bw) solid var(--fg);
-  font-family:var(--font);font-size:8px;
-  padding:.65rem 1.5rem;letter-spacing:.12em;
-  text-transform:uppercase;cursor:pointer;
-  margin-top:.3rem;
-}
+/* buttons */
+.btn-primary{background:var(--fg);color:var(--bg);border:var(--bw) solid var(--fg);font-family:var(--font);font-size:8px;padding:.65rem 1.5rem;letter-spacing:.12em;text-transform:uppercase;margin-top:.3rem;}
 .btn-primary:hover{background:var(--bg);color:var(--fg);}
-.btn-ghost{
-  background:var(--bg);color:var(--fg);
-  border:var(--bw) solid var(--fg);
-  font-family:var(--font);font-size:7px;
-  padding:.4rem .9rem;letter-spacing:.1em;cursor:pointer;
-}
+.btn-ghost{background:var(--bg);color:var(--fg);border:var(--bw) solid var(--fg);font-family:var(--font);font-size:7px;padding:.4rem .9rem;letter-spacing:.1em;}
 .btn-ghost:hover{background:var(--fg);color:var(--bg);}
-.btn-del{
-  background:var(--bg);color:#f55;
-  border:var(--bw) solid #f55;
-  font-family:var(--font);font-size:7px;
-  padding:.4rem .9rem;letter-spacing:.1em;cursor:pointer;
-}
+.btn-del{background:var(--bg);color:#f55;border:var(--bw) solid #f55;font-family:var(--font);font-size:7px;padding:.4rem .9rem;letter-spacing:.1em;}
 .btn-del:hover{background:#f55;color:#000;}
+.btn-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem;}
 
-/* POSTS TABLE */
-.apost-row{
-  border:var(--bw) solid var(--fg);
-  padding:.75rem 1rem;margin-bottom:1px;
-  display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;
-}
+/* category list in admin */
+.cat-row{border:var(--bw) solid var(--fg);padding:.75rem 1rem;margin-bottom:1px;display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;}
+.cat-icon-preview{font-size:16px;flex-shrink:0;width:28px;text-align:center;}
+.cat-info{flex:1;min-width:0;}
+.cat-ttl{font-size:9px;letter-spacing:.06em;margin-bottom:.2rem;}
+.cat-meta{font-size:6px;color:var(--muted);letter-spacing:.07em;}
+.cat-acts{display:flex;gap:.3rem;flex-shrink:0;}
+
+/* post list in admin */
+.apost-row{border:var(--bw) solid var(--fg);padding:.75rem 1rem;margin-bottom:1px;display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;}
 .apost-thumb{width:54px;height:36px;flex-shrink:0;object-fit:cover;border:1px solid var(--dim);image-rendering:pixelated;}
 .apost-nthumb{width:54px;height:36px;flex-shrink:0;background:var(--dim);border:1px solid var(--dim2);display:flex;align-items:center;justify-content:center;font-size:5px;color:var(--muted);}
 .apost-info{flex:1;min-width:0;}
@@ -532,114 +223,72 @@ body::after{
 .apost-meta{font-size:6px;color:var(--muted);letter-spacing:.07em;}
 .apost-acts{display:flex;gap:.3rem;flex-shrink:0;}
 
-/* TOAST */
-.toast{
-  position:fixed;bottom:1.5rem;right:1.5rem;z-index:9998;
-  background:var(--fg);color:var(--bg);
-  border:var(--bw) solid var(--fg);
-  padding:.65rem 1.2rem;font-size:8px;letter-spacing:.1em;
-  display:none;animation:fin .15s ease;
-}
+/* toast */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9998;background:var(--fg);color:var(--bg);border:var(--bw) solid var(--fg);padding:.65rem 1.2rem;font-size:8px;letter-spacing:.1em;display:none;animation:fin .15s ease;}
 
-/* RESPONSIVE */
+/* color picker for category */
+.icon-picker{display:flex;gap:6px;flex-wrap:wrap;margin-top:.4rem;}
+.icon-opt{width:32px;height:32px;border:var(--bw) solid var(--dim2);background:var(--dim);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:border-color .1s;}
+.icon-opt:hover,.icon-opt.selected{border-color:var(--fg);}
+
 @media(max-width:640px){
   .wiki-side{display:none;}
   .adm-side{display:none;}
   .card-grid{grid-template-columns:1fr;}
-  .stats-bar{grid-template-columns:repeat(3,1fr);}
 }
 </style>
 </head>
 <body>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-
-<!-- ████████████████████████████████
+<!-- ════════════════════════
      MAIN MENU
-████████████████████████████████ -->
+════════════════════════ -->
 <div id="page-menu" class="page pixel-grid active">
   <div class="cube-iso">
-    <div class="face-top"></div>
-    <div class="face-left"></div>
-    <div class="face-right"></div>
+    <div class="f-top"></div><div class="f-left"></div><div class="f-right"></div>
   </div>
-
   <div class="menu-logo">
     CUBIC RPG
     <span class="sub">▓▓▓ WIKI &amp; DATABASE ▓▓▓</span>
   </div>
-
-  <nav class="menu-nav">
+  <nav class="menu-nav" id="menu-nav">
     <button class="menu-btn" onclick="goWiki('home')">▶  Browse Wiki</button>
-    <button class="menu-btn" onclick="goWiki('weapons')">▶  Weapons</button>
-    <button class="menu-btn" onclick="goWiki('armour')">▶  Armour</button>
-    <button class="menu-btn" onclick="goWiki('mobs')">▶  Mobs &amp; Bosses</button>
-    <button class="menu-btn" onclick="goWiki('locations')">▶  Locations</button>
-    <button class="menu-btn" onclick="goWiki('quests')">▶  Quests &amp; Lore</button>
-    <button class="menu-btn" onclick="goWiki('mechanics')">▶  Mechanics</button>
-    <button class="menu-btn" onclick="openAdmin()">▶  Admin Panel</button>
+    <!-- dynamic category buttons injected here -->
+    <button class="menu-btn" id="menu-admin-btn" onclick="openAdmin()">▶  Admin Panel</button>
   </nav>
-
-  <div class="menu-version">v1.0 — CUBIC RPG WIKI</div>
+  <div class="menu-version">v2.0 — CUBIC RPG WIKI</div>
 </div>
 
-
-<!-- ████████████████████████████████
+<!-- ════════════════════════
      WIKI
-████████████████████████████████ -->
+════════════════════════ -->
 <div id="page-wiki" class="page">
-
-  <!-- TOPBAR -->
   <header class="topbar">
-    <div class="tb-logo" onclick="showMenu()" title="Main Menu">◈ CUBIC RPG WIKI</div>
-    <nav class="tb-nav">
-      <button id="tnav-home"      onclick="showSec('home')">Home</button>
-      <button id="tnav-weapons"   onclick="showSec('weapons')">Weapons</button>
-      <button id="tnav-armour"    onclick="showSec('armour')">Armour</button>
-      <button id="tnav-mobs"      onclick="showSec('mobs')">Mobs</button>
-      <button id="tnav-locations" onclick="showSec('locations')">Locations</button>
-      <button id="tnav-quests"    onclick="showSec('quests')">Quests</button>
-      <button id="tnav-mechanics" onclick="showSec('mechanics')">Mechanics</button>
+    <div class="tb-logo" onclick="showMenu()">◈ CUBIC RPG WIKI</div>
+    <nav class="tb-nav" id="tb-nav">
+      <button onclick="showSec('home')" id="tnav-home">Home</button>
+      <!-- dynamic category tabs injected here -->
     </nav>
     <div class="tb-search">
-      <input type="text" id="srch" placeholder="Search..."
-             onkeydown="if(event.key==='Enter')doSearch()"/>
+      <input type="text" id="srch" placeholder="Search..." onkeydown="if(event.key==='Enter')doSearch()"/>
       <button onclick="doSearch()">GO</button>
     </div>
   </header>
 
   <div class="wiki-body">
-
-    <!-- SIDEBAR -->
-    <aside class="wiki-side">
+    <aside class="wiki-side" id="wiki-side">
       <div class="ws-head">Navigate</div>
-      <a href="#" id="sl-home"      onclick="showSec('home');return false;">◈ Home</a>
-
-      <div class="ws-head">Combat</div>
-      <a href="#" id="sl-weapons"   onclick="showSec('weapons');return false;">⚔ Weapons</a>
-      <a href="#" id="sl-armour"    onclick="showSec('armour');return false;">🛡 Armour</a>
-      <a href="#" id="sl-mobs"      onclick="showSec('mobs');return false;">☠ Mobs &amp; Bosses</a>
-
-      <div class="ws-head">World</div>
-      <a href="#" id="sl-locations" onclick="showSec('locations');return false;">◉ Locations</a>
-
-      <div class="ws-head">Story</div>
-      <a href="#" id="sl-quests"    onclick="showSec('quests');return false;">📜 Quests &amp; Lore</a>
-
-      <div class="ws-head">Systems</div>
-      <a href="#" id="sl-mechanics" onclick="showSec('mechanics');return false;">⚙ Mechanics</a>
-
-      <div class="ws-head">Meta</div>
+      <a href="#" id="sl-home" onclick="showSec('home');return false;">◈ Home</a>
+      <!-- dynamic sidebar links injected here -->
+      <div class="ws-head" style="margin-top:.5rem">Meta</div>
       <a href="#" onclick="showMenu();return false;">◀ Main Menu</a>
-      <a href="#" onclick="openAdmin();return false;">⚿ Admin Panel</a>
+      <a href="#" onclick="openAdmin();return false;">⚿ Admin</a>
     </aside>
 
-    <!-- MAIN CONTENT -->
     <main class="wiki-main">
-
-      <!-- SEARCH RESULTS -->
+      <!-- search -->
       <div id="search-panel">
         <div class="sec-title">Search — <span id="srch-q" style="font-size:8px;color:var(--muted)"></span></div>
         <div id="srch-list"></div>
@@ -648,55 +297,14 @@ body::after{
       <!-- HOME -->
       <div class="wiki-sec" id="sec-home">
         <div class="sec-title">◈ Cubic RPG Wiki</div>
-        <div class="stats-bar" id="stats-bar">
-          <div class="stat-c"><span class="stat-n" id="st-total">0</span><span class="stat-l">Pages</span></div>
-          <div class="stat-c"><span class="stat-n" id="st-weapons">0</span><span class="stat-l">Weapons</span></div>
-          <div class="stat-c"><span class="stat-n" id="st-armour">0</span><span class="stat-l">Armour</span></div>
-          <div class="stat-c"><span class="stat-n" id="st-mobs">0</span><span class="stat-l">Mobs</span></div>
-          <div class="stat-c"><span class="stat-n" id="st-locations">0</span><span class="stat-l">Locations</span></div>
-          <div class="stat-c"><span class="stat-n" id="st-quests">0</span><span class="stat-l">Quests</span></div>
-          <div class="stat-c"><span class="stat-n" id="st-mechanics">0</span><span class="stat-l">Mechanics</span></div>
-        </div>
-        <div class="sec-sub">▓ Recently Updated</div>
-        <div class="card-grid" id="home-recent"></div>
-        <div class="sec-sub">▓ Categories</div>
-        <div class="card-grid">
-          <div class="wcard" onclick="showSec('weapons')"><div class="wc-cat">Combat</div><div class="wc-title">⚔ Weapons</div><div class="wc-desc">Swords, bows, staffs and all combat tools.</div></div>
-          <div class="wcard" onclick="showSec('armour')"><div class="wc-cat">Combat</div><div class="wc-title">🛡 Armour</div><div class="wc-desc">Helmets, chestplates, boots and set bonuses.</div></div>
-          <div class="wcard" onclick="showSec('mobs')"><div class="wc-cat">Enemies</div><div class="wc-title">☠ Mobs &amp; Bosses</div><div class="wc-desc">Enemy behaviour, loot and strategies.</div></div>
-          <div class="wcard" onclick="showSec('locations')"><div class="wc-cat">World</div><div class="wc-title">◉ Locations</div><div class="wc-desc">Biomes, dungeons and hidden zones.</div></div>
-          <div class="wcard" onclick="showSec('quests')"><div class="wc-cat">Story</div><div class="wc-title">📜 Quests &amp; Lore</div><div class="wc-desc">Main quests, side quests and lore entries.</div></div>
-          <div class="wcard" onclick="showSec('mechanics')"><div class="wc-cat">Systems</div><div class="wc-title">⚙ Mechanics</div><div class="wc-desc">Combat, crafting, levelling and progression.</div></div>
-        </div>
+        <div class="stats-bar" id="stats-bar"></div>
+        <div id="home-content"></div>
       </div>
 
-      <!-- CATEGORY SECTIONS -->
-      <div class="wiki-sec" id="sec-weapons">
-        <div class="sec-title">⚔ Weapons</div>
-        <div class="card-grid" id="grid-weapons"></div>
-      </div>
-      <div class="wiki-sec" id="sec-armour">
-        <div class="sec-title">🛡 Armour</div>
-        <div class="card-grid" id="grid-armour"></div>
-      </div>
-      <div class="wiki-sec" id="sec-mobs">
-        <div class="sec-title">☠ Mobs &amp; Bosses</div>
-        <div class="card-grid" id="grid-mobs"></div>
-      </div>
-      <div class="wiki-sec" id="sec-locations">
-        <div class="sec-title">◉ Locations</div>
-        <div class="card-grid" id="grid-locations"></div>
-      </div>
-      <div class="wiki-sec" id="sec-quests">
-        <div class="sec-title">📜 Quests &amp; Lore</div>
-        <div class="card-grid" id="grid-quests"></div>
-      </div>
-      <div class="wiki-sec" id="sec-mechanics">
-        <div class="sec-title">⚙ Mechanics</div>
-        <div class="card-grid" id="grid-mechanics"></div>
-      </div>
+      <!-- dynamic category sections injected here -->
+      <div id="dynamic-sections"></div>
 
-      <!-- ARTICLE VIEW -->
+      <!-- article -->
       <div class="article-view" id="article-view">
         <button class="art-back" id="art-back">◀ Back</button>
         <div class="art-head">
@@ -707,15 +315,13 @@ body::after{
         <div id="art-imgwrap"></div>
         <div class="art-body" id="art-body"></div>
       </div>
-
     </main>
   </div>
-</div><!-- /page-wiki -->
+</div>
 
-
-<!-- ████████████████████████████████
-     ADMIN PAGE
-████████████████████████████████ -->
+<!-- ════════════════════════
+     ADMIN
+════════════════════════ -->
 <div id="page-admin" class="page">
 
   <!-- LOGIN -->
@@ -723,38 +329,38 @@ body::after{
     <div class="login-box">
       <div class="login-title">⚿ ADMIN LOGIN</div>
       <div class="login-err" id="login-err">▶ INVALID CREDENTIALS</div>
-      <div class="fr">
-        <label class="login-lbl">Username</label>
-        <input type="text" id="li-user" class="finput" placeholder="admin" style="width:100%"/>
-      </div>
-      <div class="fr">
-        <label class="login-lbl">Password</label>
-        <input type="password" id="li-pass" class="finput" placeholder="••••••••" style="width:100%"
-               onkeydown="if(event.key==='Enter')doLogin()"/>
-      </div>
-      <button class="btn-primary" onclick="doLogin()" style="width:100%;margin-top:.3rem">▓ ENTER</button>
-      <div style="margin-top:1.2rem">
-        <button onclick="showMenu()" style="background:none;border:none;color:var(--muted);font-family:var(--font);font-size:7px;letter-spacing:.1em;cursor:pointer;">◀ Back to Menu</button>
-      </div>
+      <div class="fr"><label class="flbl">Username</label><input type="text" id="li-user" class="finput" placeholder="admin" style="width:100%"/></div>
+      <div class="fr"><label class="flbl">Password</label><input type="password" id="li-pass" class="finput" placeholder="••••••••" style="width:100%" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+      <button class="btn-primary" onclick="doLogin()" style="width:100%">▓ ENTER</button>
+      <div style="margin-top:1.2rem"><button onclick="showMenu()" style="background:none;border:none;color:var(--muted);font-family:var(--font);font-size:7px;letter-spacing:.1em;">◀ Back to Menu</button></div>
     </div>
   </div>
 
   <!-- DASHBOARD -->
   <div id="adm-dash" style="display:none">
     <div class="adm-top">
-      <div class="adm-top-logo">⚿ CUBIC WIKI — ADMIN</div>
-      <button class="adm-tbtn" onclick="switchTab('new')">+ New Post</button>
+      <div class="adm-top-logo">⚿ ADMIN PANEL</div>
+      <button class="adm-tbtn" onclick="switchTab('cats')">Categories</button>
+      <button class="adm-tbtn" onclick="switchTab('newcat')">+ Category</button>
       <button class="adm-tbtn" onclick="switchTab('posts')">All Posts</button>
+      <button class="adm-tbtn" onclick="switchTab('newpost')">+ Post</button>
       <button class="adm-tbtn" onclick="switchTab('settings')">Settings</button>
       <button class="adm-tbtn adm-logout" onclick="doLogout()">Logout ◀</button>
     </div>
 
     <div class="adm-body">
       <div class="adm-side">
-        <button id="atab-new"      onclick="switchTab('new')">+ New Post</button>
+        <div class="aside-head">Categories</div>
+        <button id="atab-cats"   onclick="switchTab('cats')">All Categories</button>
+        <button id="atab-newcat" onclick="switchTab('newcat')">+ New Category</button>
+        <button id="atab-editcat" onclick="switchTab('editcat')" style="display:none">Edit Category</button>
+        <div class="adm-divider"></div>
+        <div class="aside-head">Posts</div>
         <button id="atab-posts"    onclick="switchTab('posts')">All Posts</button>
+        <button id="atab-newpost"  onclick="switchTab('newpost')">+ New Post</button>
         <button id="atab-editpost" onclick="switchTab('editpost')" style="display:none">Edit Post</button>
         <div class="adm-divider"></div>
+        <div class="aside-head">System</div>
         <button id="atab-settings" onclick="switchTab('settings')">Settings</button>
         <div class="adm-divider"></div>
         <button onclick="goWiki('home')" style="color:var(--muted)">◀ View Wiki</button>
@@ -762,87 +368,106 @@ body::after{
 
       <div class="adm-main">
 
-        <!-- NEW POST -->
-        <div class="adm-panel" id="apanel-new">
-          <div class="sec-title">+ Create New Post</div>
+        <!-- ── ALL CATEGORIES ── -->
+        <div class="adm-panel" id="apanel-cats">
+          <div class="sec-title">All Categories</div>
+          <div id="cats-list"></div>
+        </div>
+
+        <!-- ── NEW CATEGORY ── -->
+        <div class="adm-panel" id="apanel-newcat">
+          <div class="sec-title">+ New Category</div>
+          <div class="fr"><label class="flbl">Category Name *</label><input class="finput" id="nc-name" placeholder="e.g. Weapons"/></div>
+          <div class="fr"><label class="flbl">Description</label><input class="finput" id="nc-desc" placeholder="Short description of this category"/></div>
+          <div class="fr">
+            <label class="flbl">Icon (emoji)</label>
+            <input class="finput" id="nc-icon" placeholder="e.g. ⚔" maxlength="4" style="width:80px"/>
+            <div class="icon-picker" id="nc-icon-picker"></div>
+          </div>
+          <div class="fr">
+            <label class="flbl">Category Image (optional)</label>
+            <div class="drop-area">▓ CLICK OR DROP IMAGE ▓<input type="file" accept="image/*" id="nc-img" onchange="loadImg(this,'nc-prev','nc-imgdata')"/></div>
+            <img id="nc-prev" class="img-prev" style="display:none"/>
+            <input type="hidden" id="nc-imgdata"/>
+          </div>
+          <button class="btn-primary" onclick="submitNewCat()">▓ CREATE CATEGORY</button>
+        </div>
+
+        <!-- ── EDIT CATEGORY ── -->
+        <div class="adm-panel" id="apanel-editcat">
+          <div class="sec-title">Edit Category</div>
+          <input type="hidden" id="ec-id"/>
+          <div class="fr"><label class="flbl">Category Name *</label><input class="finput" id="ec-name"/></div>
+          <div class="fr"><label class="flbl">Description</label><input class="finput" id="ec-desc"/></div>
+          <div class="fr">
+            <label class="flbl">Icon (emoji)</label>
+            <input class="finput" id="ec-icon" maxlength="4" style="width:80px"/>
+            <div class="icon-picker" id="ec-icon-picker"></div>
+          </div>
+          <div class="fr">
+            <label class="flbl">Replace Image (optional)</label>
+            <div class="drop-area">▓ CLICK OR DROP IMAGE ▓<input type="file" accept="image/*" id="ec-img" onchange="loadImg(this,'ec-prev','ec-imgdata')"/></div>
+            <img id="ec-prev" class="img-prev" style="display:none"/>
+            <input type="hidden" id="ec-imgdata"/>
+          </div>
+          <div class="btn-row">
+            <button class="btn-primary" onclick="submitEditCat()">▓ SAVE CHANGES</button>
+            <button class="btn-del" onclick="if(confirm('Delete this category and ALL its posts?'))deleteCat(document.getElementById(\'ec-id\').value)">DELETE CATEGORY</button>
+          </div>
+        </div>
+
+        <!-- ── ALL POSTS ── -->
+        <div class="adm-panel" id="apanel-posts">
+          <div class="sec-title">All Posts</div>
+          <div style="display:flex;gap:.4rem;margin-bottom:1rem;flex-wrap:wrap;">
+            <input type="text" id="af-q" placeholder="Filter by title..." style="flex:1;min-width:130px;font-size:8px;" oninput="renderAdminPosts()"/>
+            <select id="af-cat" style="font-size:8px;" onchange="renderAdminPosts()">
+              <option value="">All Categories</option>
+            </select>
+          </div>
+          <div id="adm-posts-list"></div>
+        </div>
+
+        <!-- ── NEW POST ── -->
+        <div class="adm-panel" id="apanel-newpost">
+          <div class="sec-title">+ New Post</div>
           <div class="fr"><label class="flbl">Title *</label><input class="finput" id="np-title" placeholder="e.g. Iron Sword"/></div>
           <div class="fr">
             <label class="flbl">Category *</label>
-            <select class="fselect" id="np-cat">
-              <option value="weapons">Weapons</option>
-              <option value="armour">Armour</option>
-              <option value="mobs">Mobs &amp; Bosses</option>
-              <option value="locations">Locations</option>
-              <option value="quests">Quests &amp; Lore</option>
-              <option value="mechanics">Mechanics</option>
-            </select>
+            <select class="fselect" id="np-cat"><option value="">— Select a category —</option></select>
           </div>
           <div class="fr"><label class="flbl">Tags (comma separated)</label><input class="finput" id="np-tags" placeholder="e.g. sword, rare, fire"/></div>
           <div class="fr">
             <label class="flbl">Image</label>
-            <div class="drop-area">
-              ▓ CLICK OR DROP IMAGE HERE ▓
-              <input type="file" accept="image/*" id="np-img" onchange="loadImg(this,'np-prev','np-imgdata')"/>
-            </div>
+            <div class="drop-area">▓ CLICK OR DROP IMAGE ▓<input type="file" accept="image/*" id="np-img" onchange="loadImg(this,'np-prev','np-imgdata')"/></div>
             <img id="np-prev" class="img-prev" style="display:none"/>
             <input type="hidden" id="np-imgdata"/>
           </div>
           <div class="fr"><label class="flbl">Content *</label><textarea class="ftextarea" id="np-body" placeholder="Write article content here...&#10;&#10;Each paragraph on a new line."></textarea></div>
-          <button class="btn-primary" onclick="submitNew()">▓ PUBLISH POST</button>
+          <button class="btn-primary" onclick="submitNewPost()">▓ PUBLISH POST</button>
         </div>
 
-        <!-- ALL POSTS -->
-        <div class="adm-panel" id="apanel-posts">
-          <div class="sec-title">All Posts</div>
-          <div style="display:flex;gap:.4rem;margin-bottom:1rem;flex-wrap:wrap;">
-            <input type="text" id="af-q" placeholder="Filter posts..." style="flex:1;min-width:130px;font-size:8px;" oninput="renderAdminList()"/>
-            <select id="af-cat" style="font-size:8px;" onchange="renderAdminList()">
-              <option value="">All Categories</option>
-              <option value="weapons">Weapons</option>
-              <option value="armour">Armour</option>
-              <option value="mobs">Mobs</option>
-              <option value="locations">Locations</option>
-              <option value="quests">Quests</option>
-              <option value="mechanics">Mechanics</option>
-            </select>
-          </div>
-          <div id="adm-list"></div>
-        </div>
-
-        <!-- EDIT POST -->
+        <!-- ── EDIT POST ── -->
         <div class="adm-panel" id="apanel-editpost">
           <div class="sec-title">Edit Post</div>
           <input type="hidden" id="ep-id"/>
           <div class="fr"><label class="flbl">Title *</label><input class="finput" id="ep-title"/></div>
-          <div class="fr">
-            <label class="flbl">Category *</label>
-            <select class="fselect" id="ep-cat">
-              <option value="weapons">Weapons</option>
-              <option value="armour">Armour</option>
-              <option value="mobs">Mobs &amp; Bosses</option>
-              <option value="locations">Locations</option>
-              <option value="quests">Quests &amp; Lore</option>
-              <option value="mechanics">Mechanics</option>
-            </select>
-          </div>
+          <div class="fr"><label class="flbl">Category *</label><select class="fselect" id="ep-cat"></select></div>
           <div class="fr"><label class="flbl">Tags</label><input class="finput" id="ep-tags"/></div>
           <div class="fr">
             <label class="flbl">Replace Image (optional)</label>
-            <div class="drop-area">
-              ▓ CLICK OR DROP NEW IMAGE ▓
-              <input type="file" accept="image/*" id="ep-img" onchange="loadImg(this,'ep-prev','ep-imgdata')"/>
-            </div>
+            <div class="drop-area">▓ CLICK OR DROP IMAGE ▓<input type="file" accept="image/*" id="ep-img" onchange="loadImg(this,'ep-prev','ep-imgdata')"/></div>
             <img id="ep-prev" class="img-prev" style="display:none"/>
             <input type="hidden" id="ep-imgdata"/>
           </div>
           <div class="fr"><label class="flbl">Content *</label><textarea class="ftextarea" id="ep-body"></textarea></div>
-          <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-            <button class="btn-primary" onclick="submitEdit()">▓ SAVE CHANGES</button>
-            <button class="btn-del" onclick="if(confirm('Delete this post?'))delPost(document.getElementById('ep-id').value)">DELETE</button>
+          <div class="btn-row">
+            <button class="btn-primary" onclick="submitEditPost()">▓ SAVE CHANGES</button>
+            <button class="btn-del" onclick="if(confirm('Delete this post?'))deletePost(document.getElementById('ep-id').value)">DELETE POST</button>
           </div>
         </div>
 
-        <!-- SETTINGS -->
+        <!-- ── SETTINGS ── -->
         <div class="adm-panel" id="apanel-settings">
           <div class="sec-title">Settings</div>
           <div class="sec-sub">Change Admin Password</div>
@@ -850,127 +475,281 @@ body::after{
           <div class="fr"><label class="flbl">New Password</label><input type="password" class="finput" id="s-new"/></div>
           <div class="fr"><label class="flbl">Confirm New Password</label><input type="password" class="finput" id="s-cnf"/></div>
           <button class="btn-primary" onclick="changePass()">▓ UPDATE PASSWORD</button>
-
+          <div class="sec-sub" style="margin-top:2rem">Change Wiki Title</div>
+          <div class="fr"><label class="flbl">Wiki Name</label><input class="finput" id="s-title" placeholder="Cubic RPG Wiki"/></div>
+          <button class="btn-primary" onclick="changeTitle()">▓ SAVE TITLE</button>
           <div class="sec-sub" style="margin-top:2rem">Danger Zone</div>
-          <button class="btn-del" onclick="if(confirm('Delete ALL posts? Cannot be undone.'))nukeAll()">◆ CLEAR ALL POSTS</button>
+          <div class="btn-row">
+            <button class="btn-del" onclick="if(confirm('Delete ALL posts? Cannot be undone.'))nukeAllPosts()">◆ CLEAR ALL POSTS</button>
+            <button class="btn-del" onclick="if(confirm('Delete EVERYTHING (categories + posts)? Cannot be undone.'))nukeEverything()">◆ RESET WIKI</button>
+          </div>
         </div>
 
-      </div><!-- /adm-main -->
-    </div><!-- /adm-body -->
-  </div><!-- /adm-dash -->
-</div><!-- /page-admin -->
+      </div>
+    </div>
+  </div>
+</div>
 
-
+<!-- ════════════════════════
+     JAVASCRIPT
+════════════════════════ -->
 <script>
-/* ═══════════ STORAGE KEYS ═══════════ */
-const PKEY = 'cubic_posts';
-const AKEY = 'cubic_adminpw';
-if (!localStorage.getItem(AKEY)) localStorage.setItem(AKEY, 'admin123');
+/* ══ STORAGE KEYS ══ */
+const CATS_KEY  = 'cubic_categories';
+const POSTS_KEY = 'cubic_posts';
+const PASS_KEY  = 'cubic_adminpw';
+const TITLE_KEY = 'cubic_title';
 
-/* ═══════════ POSTS CRUD ═══════════ */
-const getPosts  = () => { try { return JSON.parse(localStorage.getItem(PKEY))||[]; } catch{ return []; } };
-const savePosts = p => localStorage.setItem(PKEY, JSON.stringify(p));
-const nextId    = () => { const p=getPosts(); return p.length ? Math.max(...p.map(x=>x.id))+1 : 1; };
+if (!localStorage.getItem(PASS_KEY)) localStorage.setItem(PASS_KEY, '170106SuSLlPoul_ll$');
 
-/* ═══════════ ROUTING ═══════════ */
+/* ══ DATA HELPERS ══ */
+const getCats  = () => { try{ return JSON.parse(localStorage.getItem(CATS_KEY))||[]; }catch{ return []; } };
+const getPosts = () => { try{ return JSON.parse(localStorage.getItem(POSTS_KEY))||[]; }catch{ return []; } };
+const saveCats  = d => localStorage.setItem(CATS_KEY,  JSON.stringify(d));
+const savePosts = d => localStorage.setItem(POSTS_KEY, JSON.stringify(d));
+const getTitle  = () => localStorage.getItem(TITLE_KEY) || 'Cubic RPG Wiki';
+const nextCatId  = () => { const c=getCats();  return c.length ? Math.max(...c.map(x=>x.id))+1 : 1; };
+const nextPostId = () => { const p=getPosts(); return p.length ? Math.max(...p.map(x=>x.id))+1 : 1; };
+
+/* ══ ICON OPTIONS ══ */
+const ICONS = ['⚔','🛡','☠','◉','📜','⚙','🗡','🏹','🪄','🐉','💎','🏆','⛏','🌍','🗺','📖','🔥','❄️','⚡','🌑'];
+
+function buildIconPicker(pickerId, inputId) {
+  const wrap = document.getElementById(pickerId);
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  ICONS.forEach(icon => {
+    const d = document.createElement('div');
+    d.className = 'icon-opt';
+    d.textContent = icon;
+    d.onclick = () => {
+      document.getElementById(inputId).value = icon;
+      wrap.querySelectorAll('.icon-opt').forEach(x=>x.classList.remove('selected'));
+      d.classList.add('selected');
+    };
+    wrap.appendChild(d);
+  });
+}
+
+/* ══ ROUTING ══ */
 let loggedIn = false;
+let curSec = 'home';
+let prevSec = 'home';
 
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-function showMenu(){ showPage('page-menu'); }
-function goWiki(sec){ showPage('page-wiki'); showSec(sec); }
+function showMenu(){ rebuildMenu(); showPage('page-menu'); }
+function goWiki(sec){ rebuildWiki(); showPage('page-wiki'); showSec(sec); }
 function openAdmin(){ showPage('page-admin'); }
 
-/* ═══════════ WIKI SECTIONS ═══════════ */
-let curSec = 'home';
-let prevSec = 'home';
+/* ══ REBUILD DYNAMIC UI ══ */
+function rebuildMenu() {
+  const nav = document.getElementById('menu-nav');
+  const adminBtn = document.getElementById('menu-admin-btn');
+  // remove old cat buttons
+  nav.querySelectorAll('.cat-menu-btn').forEach(b=>b.remove());
+  const cats = getCats();
+  cats.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'menu-btn cat-menu-btn';
+    btn.textContent = '▶  ' + (cat.icon ? cat.icon + ' ' : '') + cat.name;
+    btn.onclick = () => goWiki('cat-' + cat.id);
+    nav.insertBefore(btn, adminBtn);
+  });
+  // update logo
+  document.querySelector('.menu-logo').childNodes[0].textContent = getTitle().toUpperCase();
+}
 
-function showSec(name){
-  // close search & article
+function rebuildWiki() {
+  const cats = getCats();
+
+  // update title
+  document.querySelector('.tb-logo').textContent = '◈ ' + getTitle().toUpperCase();
+  document.title = getTitle();
+
+  // topbar nav
+  const tnav = document.getElementById('tb-nav');
+  tnav.innerHTML = '<button onclick="showSec(\'home\')" id="tnav-home">Home</button>';
+  cats.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.id = 'tnav-cat-' + cat.id;
+    btn.textContent = (cat.icon || '') + ' ' + cat.name;
+    btn.onclick = () => showSec('cat-' + cat.id);
+    tnav.appendChild(btn);
+  });
+
+  // sidebar
+  const side = document.getElementById('wiki-side');
+  // remove old cat links
+  side.querySelectorAll('.dyn-link').forEach(l=>l.remove());
+  const metaHead = side.querySelector('.ws-head[style]');
+
+  // group by "sections" - just list all cats
+  if (cats.length) {
+    const catHead = document.createElement('div');
+    catHead.className = 'ws-head dyn-link';
+    catHead.textContent = 'Categories';
+    side.insertBefore(catHead, metaHead);
+    cats.forEach(cat => {
+      const a = document.createElement('a');
+      a.href = '#';
+      a.className = 'dyn-link';
+      a.id = 'sl-cat-' + cat.id;
+      a.textContent = (cat.icon || '◆') + ' ' + cat.name;
+      a.onclick = e => { e.preventDefault(); showSec('cat-' + cat.id); };
+      side.insertBefore(a, metaHead);
+    });
+  }
+
+  // rebuild dynamic sections
+  const dynSections = document.getElementById('dynamic-sections');
+  dynSections.innerHTML = '';
+  cats.forEach(cat => {
+    const sec = document.createElement('div');
+    sec.className = 'wiki-sec';
+    sec.id = 'sec-cat-' + cat.id;
+    sec.innerHTML = `
+      <div class="sec-title">${cat.icon||''} ${cat.name}</div>
+      ${cat.desc ? `<div style="font-size:8px;color:var(--muted);letter-spacing:.08em;margin-bottom:1.5rem;line-height:1.8">${cat.desc}</div>` : ''}
+      <div class="card-grid" id="grid-cat-${cat.id}"></div>
+    `;
+    dynSections.appendChild(sec);
+  });
+}
+
+/* ══ WIKI SECTIONS ══ */
+function showSec(name) {
   const sp = document.getElementById('search-panel');
-  sp.classList.remove('active'); sp.style.display='none';
+  sp.classList.remove('active'); sp.style.display = 'none';
   document.getElementById('article-view').classList.remove('active');
-
   document.querySelectorAll('.wiki-sec').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.tb-nav button').forEach(b=>b.classList.remove('anav'));
   document.querySelectorAll('.wiki-side a').forEach(a=>a.classList.remove('alink'));
 
-  const sec=document.getElementById('sec-'+name);
-  if(sec) sec.classList.add('active');
-  const tn=document.getElementById('tnav-'+name);
-  if(tn) tn.classList.add('anav');
-  const sl=document.getElementById('sl-'+name);
-  if(sl) sl.classList.add('alink');
+  const sec = document.getElementById('sec-' + name);
+  if (sec) sec.classList.add('active');
+  const tn  = document.getElementById('tnav-' + name);
+  if (tn) tn.classList.add('anav');
+  const sl  = document.getElementById('sl-' + name);
+  if (sl) sl.classList.add('alink');
 
-  curSec=name;
+  curSec = name;
   renderSec(name);
 }
 
-function renderSec(name){
-  if(name==='home'){ renderHome(); return; }
-  const posts=getPosts().filter(p=>p.category===name);
-  const grid=document.getElementById('grid-'+name);
-  if(!grid) return;
-  grid.innerHTML='';
-  if(!posts.length){
-    grid.style.background='none';
-    grid.innerHTML=`<div class="empty-note">No entries yet. Add some via the Admin Panel.</div>`;
+function renderSec(name) {
+  if (name === 'home') { renderHome(); return; }
+  if (name.startsWith('cat-')) {
+    const catId = parseInt(name.replace('cat-', ''));
+    renderCatSection(catId);
+  }
+}
+
+function renderHome() {
+  const cats  = getCats();
+  const posts = getPosts();
+
+  // stats
+  const bar = document.getElementById('stats-bar');
+  bar.style.background = cats.length ? 'var(--fg)' : 'none';
+  bar.innerHTML = cats.length
+    ? `<div class="stat-c"><span class="stat-n">${posts.length}</span><span class="stat-l">Total Posts</span></div>`
+      + cats.map(c => `<div class="stat-c"><span class="stat-n">${posts.filter(p=>p.catId===c.id).length}</span><span class="stat-l">${c.name}</span></div>`).join('')
+    : '';
+
+  const content = document.getElementById('home-content');
+
+  if (!cats.length) {
+    content.innerHTML = `
+      <div class="empty-state">
+        <span class="es-icon">▓</span>
+        <div class="es-title">Wiki is empty</div>
+        <div class="es-sub">No categories have been created yet.<br>Log in to the Admin Panel to get started.</div>
+      </div>`;
     return;
   }
-  grid.style.background='var(--fg)';
-  posts.forEach(p=>grid.appendChild(makeCard(p)));
+
+  // recent posts
+  const recent = [...posts].reverse().slice(0,6);
+  let html = '';
+  if (recent.length) {
+    html += '<div class="sec-sub">▓ Recently Updated</div>';
+    html += '<div class="card-grid" id="home-recent"></div>';
+  }
+
+  // category grid
+  html += '<div class="sec-sub">▓ Categories</div>';
+  html += '<div class="card-grid">';
+  cats.forEach(cat => {
+    const count = posts.filter(p=>p.catId===cat.id).length;
+    html += `<div class="wcard" onclick="showSec('cat-${cat.id}')">
+      <div class="wc-icon">${cat.icon||'◆'}</div>
+      <div class="wc-title">${cat.name}</div>
+      <div class="wc-desc">${cat.desc||''}<br><span style="color:var(--muted);font-size:6px">${count} post${count!==1?'s':''}</span></div>
+    </div>`;
+  });
+  html += '</div>';
+  content.innerHTML = html;
+
+  if (recent.length) {
+    const g = document.getElementById('home-recent');
+    recent.forEach(p => g.appendChild(makeCard(p)));
+  }
 }
 
-function renderHome(){
-  const all=getPosts();
-  const cats=['weapons','armour','mobs','locations','quests','mechanics'];
-  document.getElementById('st-total').textContent=all.length;
-  cats.forEach(c=>{ const el=document.getElementById('st-'+c); if(el) el.textContent=all.filter(p=>p.category===c).length; });
-  const recent=[...all].reverse().slice(0,6);
-  const g=document.getElementById('home-recent');
-  g.innerHTML='';
-  if(!recent.length){ g.style.background='none'; g.innerHTML='<div class="empty-note">No posts yet.</div>'; return; }
-  g.style.background='var(--fg)';
-  recent.forEach(p=>g.appendChild(makeCard(p)));
+function renderCatSection(catId) {
+  const posts = getPosts().filter(p=>p.catId===catId);
+  const grid  = document.getElementById('grid-cat-' + catId);
+  if (!grid) return;
+  grid.innerHTML = '';
+  if (!posts.length) {
+    grid.style.background = 'none';
+    grid.innerHTML = `<div class="empty-state" style="border:none">
+      <span class="es-icon">◆</span>
+      <div class="es-title">No posts yet</div>
+      <div class="es-sub">Add posts to this category via the Admin Panel.</div>
+    </div>`;
+    return;
+  }
+  grid.style.background = 'var(--fg)';
+  posts.forEach(p => grid.appendChild(makeCard(p)));
 }
 
-function makeCard(p){
-  const d=document.createElement('div');
-  d.className='wcard';
-  d.onclick=()=>openArticle(p.id);
-  d.innerHTML=`
-    ${p.image?`<img class="wc-img" src="${p.image}" loading="lazy"/>`:`<div class="wc-nimg">NO IMAGE</div>`}
-    <div class="wc-cat">${catLabel(p.category)}</div>
+function makeCard(p) {
+  const cats = getCats();
+  const cat  = cats.find(c=>c.id===p.catId);
+  const d    = document.createElement('div');
+  d.className = 'wcard';
+  d.onclick   = () => openArticle(p.id);
+  d.innerHTML = `
+    ${p.image ? `<img class="wc-img" src="${p.image}" loading="lazy"/>` : `<div class="wc-nimg">NO IMAGE</div>`}
+    <div class="wc-cat">${cat ? (cat.icon||'')+ ' ' + cat.name : 'Uncategorised'}</div>
     <div class="wc-title">${p.title}</div>
     <div class="wc-desc">${p.body.substring(0,80)}${p.body.length>80?'…':''}</div>
   `;
   return d;
 }
 
-function catLabel(c){
-  return {weapons:'⚔ Weapons',armour:'🛡 Armour',mobs:'☠ Mobs',
-          locations:'◉ Locations',quests:'📜 Quests',mechanics:'⚙ Mechanics'}[c]||c;
-}
-
-/* ═══════════ ARTICLE ═══════════ */
-function openArticle(id){
-  const p=getPosts().find(x=>x.id===id); if(!p) return;
-  prevSec=curSec;
+/* ══ ARTICLE ══ */
+function openArticle(id) {
+  const p = getPosts().find(x=>x.id===id); if (!p) return;
+  const cat = getCats().find(c=>c.id===p.catId);
+  prevSec = curSec;
   document.querySelectorAll('.wiki-sec').forEach(s=>s.classList.remove('active'));
-  const sp=document.getElementById('search-panel');
+  const sp = document.getElementById('search-panel');
   sp.classList.remove('active'); sp.style.display='none';
 
-  document.getElementById('art-meta').textContent=`${catLabel(p.category).toUpperCase()} · ID #${p.id} · ${p.date||''}`;
-  document.getElementById('art-h1').textContent=p.title;
-  const tags=(p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
-  document.getElementById('art-tags').innerHTML=tags.map(t=>`<span class="art-tag">${t}</span>`).join('');
-  document.getElementById('art-imgwrap').innerHTML=
-    p.image?`<img class="art-img" src="${p.image}" alt="${p.title}"/>`
-            :`<div class="art-nimg">NO IMAGE</div>`;
-  document.getElementById('art-body').textContent=p.body;
-  document.getElementById('art-back').onclick=()=>{
+  document.getElementById('art-meta').textContent =
+    `${cat ? (cat.icon||'') + ' ' + cat.name.toUpperCase() : 'UNCATEGORISED'} · ID #${p.id} · ${p.date||''}`;
+  document.getElementById('art-h1').textContent = p.title;
+  const tags = (p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
+  document.getElementById('art-tags').innerHTML = tags.map(t=>`<span class="art-tag">${t}</span>`).join('');
+  document.getElementById('art-imgwrap').innerHTML =
+    p.image ? `<img class="art-img" src="${p.image}" alt="${p.title}"/>` : `<div class="art-nimg">NO IMAGE</div>`;
+  document.getElementById('art-body').textContent = p.body;
+  document.getElementById('art-back').onclick = () => {
     document.getElementById('article-view').classList.remove('active');
     showSec(prevSec);
   };
@@ -978,69 +757,299 @@ function openArticle(id){
   window.scrollTo(0,0);
 }
 
-/* ═══════════ SEARCH ═══════════ */
-function doSearch(){
-  const q=document.getElementById('srch').value.trim().toLowerCase();
-  if(!q) return;
+/* ══ SEARCH ══ */
+function doSearch() {
+  const q = document.getElementById('srch').value.trim().toLowerCase(); if(!q) return;
   document.querySelectorAll('.wiki-sec').forEach(s=>s.classList.remove('active'));
   document.getElementById('article-view').classList.remove('active');
-  const sp=document.getElementById('search-panel');
+  const sp = document.getElementById('search-panel');
   sp.style.display='block'; sp.classList.add('active');
-  document.getElementById('srch-q').textContent=`"${q}"`;
-  const res=getPosts().filter(p=>
-    p.title.toLowerCase().includes(q)||(p.body||'').toLowerCase().includes(q)||
-    (p.tags||'').toLowerCase().includes(q)||catLabel(p.category).toLowerCase().includes(q)
+  document.getElementById('srch-q').textContent = `"${q}"`;
+  const cats = getCats();
+  const res  = getPosts().filter(p =>
+    p.title.toLowerCase().includes(q) ||
+    (p.body||'').toLowerCase().includes(q) ||
+    (p.tags||'').toLowerCase().includes(q)
   );
-  const list=document.getElementById('srch-list');
-  if(!res.length){ list.innerHTML='<div class="sres-none">NO RESULTS FOUND</div>'; return; }
-  list.innerHTML='';
-  res.forEach(p=>{
-    const d=document.createElement('div');
-    d.className='sres-item';
-    d.onclick=()=>openArticle(p.id);
-    d.innerHTML=`
-      ${p.image?`<img class="sres-thumb" src="${p.image}"/>`:`<div class="sres-nthumb">IMG</div>`}
-      <div><div class="sres-title">${p.title}</div><div class="sres-cat">${catLabel(p.category)}</div></div>
-    `;
+  const list = document.getElementById('srch-list');
+  if (!res.length) { list.innerHTML='<div class="sres-none">NO RESULTS FOUND</div>'; return; }
+  list.innerHTML = '';
+  res.forEach(p => {
+    const cat = cats.find(c=>c.id===p.catId);
+    const d = document.createElement('div');
+    d.className = 'sres-item';
+    d.onclick = () => openArticle(p.id);
+    d.innerHTML = `
+      ${p.image ? `<img class="sres-thumb" src="${p.image}"/>` : `<div class="sres-nthumb">IMG</div>`}
+      <div>
+        <div class="sres-title">${p.title}</div>
+        <div class="sres-cat">${cat ? (cat.icon||'')+ ' ' + cat.name : 'No category'}</div>
+      </div>`;
     list.appendChild(d);
   });
 }
 
-/* ═══════════ ADMIN LOGIN ═══════════ */
-function doLogin(){
-  const u=document.getElementById('li-user').value.trim();
-  const p=document.getElementById('li-pass').value;
-  if(u==='admin' && p===localStorage.getItem(AKEY)){
-    loggedIn=true;
-    document.getElementById('adm-login').style.display='none';
-    document.getElementById('adm-dash').style.display='block';
-    switchTab('posts');
+/* ══ ADMIN LOGIN ══ */
+function doLogin() {
+  const u = document.getElementById('li-user').value.trim();
+  const p = document.getElementById('li-pass').value;
+  if (u==='admin' && p===localStorage.getItem(PASS_KEY)) {
+    loggedIn = true;
+    document.getElementById('adm-login').style.display = 'none';
+    document.getElementById('adm-dash').style.display  = 'block';
+    rebuildAdminCatDropdowns();
+    switchTab('cats');
   } else {
-    document.getElementById('login-err').style.display='block';
+    document.getElementById('login-err').style.display = 'block';
   }
 }
-function doLogout(){
-  loggedIn=false;
-  document.getElementById('adm-login').style.display='flex';
-  document.getElementById('adm-dash').style.display='none';
-  document.getElementById('li-pass').value='';
-  document.getElementById('login-err').style.display='none';
+function doLogout() {
+  loggedIn = false;
+  document.getElementById('adm-login').style.display = 'flex';
+  document.getElementById('adm-dash').style.display  = 'none';
+  document.getElementById('li-pass').value = '';
+  document.getElementById('login-err').style.display = 'none';
   showMenu();
 }
 
-/* ═══════════ ADMIN TABS ═══════════ */
-function switchTab(tab){
+/* ══ ADMIN TABS ══ */
+function switchTab(tab) {
   document.querySelectorAll('.adm-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.adm-side button').forEach(b=>b.classList.remove('atab'));
-  const panel=document.getElementById('apanel-'+tab);
-  const btn=document.getElementById('atab-'+tab);
-  if(panel) panel.classList.add('active');
-  if(btn) btn.classList.add('atab');
-  if(tab==='posts') renderAdminList();
+  const panel = document.getElementById('apanel-'+tab);
+  const btn   = document.getElementById('atab-'+tab);
+  if (panel) panel.classList.add('active');
+  if (btn)   btn.classList.add('atab');
+  if (tab==='cats')    renderAdminCats();
+  if (tab==='posts')   renderAdminPosts();
+  if (tab==='newcat')  { buildIconPicker('nc-icon-picker','nc-icon'); }
+  if (tab==='newpost') rebuildAdminCatDropdowns();
+  if (tab==='settings') {
+    document.getElementById('s-title').value = getTitle();
+  }
 }
 
-/* ═══════════ IMAGE LOADING ═══════════ */
-function loadImg(input,prevId,dataId){
+/* ══ CATEGORY CRUD ══ */
+function submitNewCat() {
+  const name = document.getElementById('nc-name').value.trim();
+  const desc = document.getElementById('nc-desc').value.trim();
+  const icon = document.getElementById('nc-icon').value.trim();
+  const img  = document.getElementById('nc-imgdata').value;
+  if (!name) { toast('Category name is required!'); return; }
+
+  const cats = getCats();
+  if (cats.find(c=>c.name.toLowerCase()===name.toLowerCase())) { toast('A category with this name already exists!'); return; }
+
+  cats.push({ id:nextCatId(), name, desc, icon, image:img, date:new Date().toLocaleDateString() });
+  saveCats(cats);
+
+  // reset form
+  ['nc-name','nc-desc','nc-icon','nc-imgdata'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('nc-prev').style.display='none';
+
+  toast('Category created!');
+  rebuildAdminCatDropdowns();
+  switchTab('cats');
+}
+
+function renderAdminCats() {
+  const cats  = getCats();
+  const posts = getPosts();
+  const list  = document.getElementById('cats-list');
+  if (!cats.length) {
+    list.innerHTML = `<div class="empty-state"><span class="es-icon">◆</span><div class="es-title">No categories yet</div><div class="es-sub">Create your first category to get started.</div></div>
+      <button class="btn-primary" onclick="switchTab('newcat')" style="margin-top:.5rem">+ Create First Category</button>`;
+    return;
+  }
+  list.innerHTML = '';
+  cats.forEach(cat => {
+    const count = posts.filter(p=>p.catId===cat.id).length;
+    const row = document.createElement('div');
+    row.className = 'cat-row';
+    row.innerHTML = `
+      <div class="cat-icon-preview">${cat.icon||'◆'}</div>
+      <div class="cat-info">
+        <div class="cat-ttl">${cat.name}</div>
+        <div class="cat-meta">${count} post${count!==1?'s':''} · Created ${cat.date||''} · ID #${cat.id}</div>
+        ${cat.desc ? `<div class="cat-meta" style="margin-top:.2rem">${cat.desc}</div>` : ''}
+      </div>
+      <div class="cat-acts">
+        <button class="btn-ghost" onclick="startEditCat(${cat.id})">EDIT</button>
+        <button class="btn-del" onclick="if(confirm('Delete category &quot;${cat.name}&quot; and all its posts?'))deleteCat(${cat.id})">DEL</button>
+      </div>`;
+    list.appendChild(row);
+  });
+}
+
+function startEditCat(id) {
+  const cat = getCats().find(c=>c.id===id); if (!cat) return;
+  document.getElementById('ec-id').value   = cat.id;
+  document.getElementById('ec-name').value = cat.name;
+  document.getElementById('ec-desc').value = cat.desc||'';
+  document.getElementById('ec-icon').value = cat.icon||'';
+  document.getElementById('ec-imgdata').value = cat.image||'';
+  const prev = document.getElementById('ec-prev');
+  if (cat.image) { prev.src=cat.image; prev.style.display='block'; } else { prev.style.display='none'; }
+  buildIconPicker('ec-icon-picker','ec-icon');
+  document.getElementById('atab-editcat').style.display='block';
+  switchTab('editcat');
+}
+
+function submitEditCat() {
+  const id   = parseInt(document.getElementById('ec-id').value);
+  const name = document.getElementById('ec-name').value.trim();
+  const desc = document.getElementById('ec-desc').value.trim();
+  const icon = document.getElementById('ec-icon').value.trim();
+  const img  = document.getElementById('ec-imgdata').value;
+  if (!name) { toast('Name is required!'); return; }
+  const cats = getCats();
+  const idx  = cats.findIndex(c=>c.id===id); if (idx===-1) return;
+  cats[idx]  = { ...cats[idx], name, desc, icon, image:img };
+  saveCats(cats);
+  toast('Category updated!');
+  rebuildAdminCatDropdowns();
+  switchTab('cats');
+}
+
+function deleteCat(id) {
+  id = parseInt(id);
+  saveCats(getPosts().length ? getCats().filter(c=>c.id!==id) : []);
+  // also delete posts in this category
+  savePosts(getPosts().filter(p=>p.catId!==id));
+  toast('Category deleted.');
+  document.getElementById('atab-editcat').style.display='none';
+  rebuildAdminCatDropdowns();
+  switchTab('cats');
+}
+
+/* ══ POST CRUD ══ */
+function rebuildAdminCatDropdowns() {
+  const cats = getCats();
+  const opts = cats.length
+    ? cats.map(c=>`<option value="${c.id}">${c.icon||''} ${c.name}</option>`).join('')
+    : '<option value="">No categories — create one first</option>';
+
+  document.getElementById('np-cat').innerHTML = '<option value="">— Select a category —</option>' + opts;
+  document.getElementById('ep-cat').innerHTML = opts;
+
+  const filter = document.getElementById('af-cat');
+  filter.innerHTML = '<option value="">All Categories</option>' +
+    cats.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+}
+
+function submitNewPost() {
+  const title = document.getElementById('np-title').value.trim();
+  const catId = parseInt(document.getElementById('np-cat').value);
+  const tags  = document.getElementById('np-tags').value.trim();
+  const body  = document.getElementById('np-body').value.trim();
+  const img   = document.getElementById('np-imgdata').value;
+  if (!title || !body) { toast('Title and content are required!'); return; }
+  if (!catId)          { toast('Please select a category!'); return; }
+
+  const posts = getPosts();
+  posts.push({ id:nextPostId(), title, catId, tags, body, image:img, date:new Date().toLocaleDateString() });
+  savePosts(posts);
+
+  ['np-title','np-tags','np-body','np-imgdata'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('np-prev').style.display='none';
+  document.getElementById('np-cat').selectedIndex=0;
+
+  toast('Post published!');
+  switchTab('posts');
+}
+
+function renderAdminPosts() {
+  const q   = (document.getElementById('af-q').value||'').toLowerCase();
+  const cat = document.getElementById('af-cat').value;
+  const cats = getCats();
+  let posts = getPosts();
+  if (cat)  posts = posts.filter(p=>p.catId===parseInt(cat));
+  if (q)    posts = posts.filter(p=>p.title.toLowerCase().includes(q)||(p.tags||'').toLowerCase().includes(q));
+  const list = document.getElementById('adm-posts-list');
+  if (!posts.length) {
+    list.innerHTML = '<div style="padding:1.5rem;font-size:8px;color:var(--muted);letter-spacing:.1em">No posts found.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  [...posts].reverse().forEach(p => {
+    const cat = cats.find(c=>c.id===p.catId);
+    const row = document.createElement('div');
+    row.className = 'apost-row';
+    row.innerHTML = `
+      ${p.image ? `<img class="apost-thumb" src="${p.image}"/>` : `<div class="apost-nthumb">IMG</div>`}
+      <div class="apost-info">
+        <div class="apost-ttl">${p.title}</div>
+        <div class="apost-meta">${cat ? (cat.icon||'')+' '+cat.name : 'No cat'} · ${p.date||''} · ID #${p.id}</div>
+      </div>
+      <div class="apost-acts">
+        <button class="btn-ghost" onclick="startEditPost(${p.id})">EDIT</button>
+        <button class="btn-del"   onclick="if(confirm('Delete?'))deletePost(${p.id})">DEL</button>
+      </div>`;
+    list.appendChild(row);
+  });
+}
+
+function startEditPost(id) {
+  const p = getPosts().find(x=>x.id===id); if (!p) return;
+  rebuildAdminCatDropdowns();
+  document.getElementById('ep-id').value    = p.id;
+  document.getElementById('ep-title').value = p.title;
+  document.getElementById('ep-cat').value   = p.catId;
+  document.getElementById('ep-tags').value  = p.tags||'';
+  document.getElementById('ep-body').value  = p.body;
+  document.getElementById('ep-imgdata').value = p.image||'';
+  const prev = document.getElementById('ep-prev');
+  if (p.image) { prev.src=p.image; prev.style.display='block'; } else { prev.style.display='none'; }
+  document.getElementById('atab-editpost').style.display='block';
+  switchTab('editpost');
+}
+
+function submitEditPost() {
+  const id    = parseInt(document.getElementById('ep-id').value);
+  const title = document.getElementById('ep-title').value.trim();
+  const catId = parseInt(document.getElementById('ep-cat').value);
+  const tags  = document.getElementById('ep-tags').value.trim();
+  const body  = document.getElementById('ep-body').value.trim();
+  const img   = document.getElementById('ep-imgdata').value;
+  if (!title||!body) { toast('Title and content required!'); return; }
+  const posts = getPosts();
+  const idx   = posts.findIndex(x=>x.id===id); if (idx===-1) return;
+  posts[idx]  = { ...posts[idx], title, catId, tags, body, image:img };
+  savePosts(posts);
+  toast('Changes saved!');
+  switchTab('posts');
+}
+
+function deletePost(id) {
+  savePosts(getPosts().filter(p=>p.id!==parseInt(id)));
+  toast('Post deleted.');
+  document.getElementById('atab-editpost').style.display='none';
+  switchTab('posts');
+}
+
+/* ══ SETTINGS ══ */
+function changePass() {
+  const cur = document.getElementById('s-cur').value;
+  const nw  = document.getElementById('s-new').value;
+  const cnf = document.getElementById('s-cnf').value;
+  if (cur!==localStorage.getItem(PASS_KEY)) { toast('Wrong current password!'); return; }
+  if (!nw)    { toast('New password cannot be empty!'); return; }
+  if (nw!==cnf) { toast('Passwords do not match!'); return; }
+  localStorage.setItem(PASS_KEY, nw);
+  ['s-cur','s-new','s-cnf'].forEach(i=>document.getElementById(i).value='');
+  toast('Password updated!');
+}
+function changeTitle() {
+  const t = document.getElementById('s-title').value.trim();
+  if (!t) { toast('Title cannot be empty!'); return; }
+  localStorage.setItem(TITLE_KEY, t);
+  toast('Title updated!');
+}
+function nukeAllPosts()  { savePosts([]); toast('All posts cleared.'); switchTab('posts'); }
+function nukeEverything(){ savePosts([]); saveCats([]); toast('Wiki reset.'); rebuildAdminCatDropdowns(); switchTab('cats'); }
+
+/* ══ IMAGE LOADER ══ */
+function loadImg(input, prevId, dataId) {
   const f=input.files[0]; if(!f) return;
   const r=new FileReader();
   r.onload=e=>{
@@ -1051,140 +1060,17 @@ function loadImg(input,prevId,dataId){
   r.readAsDataURL(f);
 }
 
-/* ═══════════ CRUD ═══════════ */
-function submitNew(){
-  const title=document.getElementById('np-title').value.trim();
-  const cat=document.getElementById('np-cat').value;
-  const tags=document.getElementById('np-tags').value.trim();
-  const body=document.getElementById('np-body').value.trim();
-  const img=document.getElementById('np-imgdata').value;
-  if(!title||!body){ toast('Title and content required!'); return; }
-  const posts=getPosts();
-  posts.push({id:nextId(),title,category:cat,tags,body,image:img,date:new Date().toLocaleDateString()});
-  savePosts(posts);
-  ['np-title','np-tags','np-body','np-imgdata'].forEach(i=>document.getElementById(i).value='');
-  document.getElementById('np-prev').style.display='none';
-  document.getElementById('np-cat').selectedIndex=0;
-  toast('Post published!');
-  switchTab('posts');
-}
-
-function renderAdminList(){
-  const q=(document.getElementById('af-q').value||'').toLowerCase();
-  const cat=document.getElementById('af-cat').value;
-  let posts=getPosts();
-  if(cat) posts=posts.filter(p=>p.category===cat);
-  if(q)   posts=posts.filter(p=>p.title.toLowerCase().includes(q)||(p.tags||'').toLowerCase().includes(q));
-  const list=document.getElementById('adm-list');
-  if(!posts.length){ list.innerHTML='<div style="padding:1.5rem;font-size:8px;color:var(--muted);letter-spacing:.1em">No posts found.</div>'; return; }
-  list.innerHTML='';
-  [...posts].reverse().forEach(p=>{
-    const row=document.createElement('div');
-    row.className='apost-row';
-    row.innerHTML=`
-      ${p.image?`<img class="apost-thumb" src="${p.image}"/>`:`<div class="apost-nthumb">IMG</div>`}
-      <div class="apost-info">
-        <div class="apost-ttl">${p.title}</div>
-        <div class="apost-meta">${catLabel(p.category)} · ${p.date||''} · ID #${p.id}</div>
-      </div>
-      <div class="apost-acts">
-        <button class="btn-ghost" onclick="startEdit(${p.id})">EDIT</button>
-        <button class="btn-del" onclick="if(confirm('Delete?'))delPost(${p.id})">DEL</button>
-      </div>
-    `;
-    list.appendChild(row);
-  });
-}
-
-function startEdit(id){
-  const p=getPosts().find(x=>x.id===id); if(!p) return;
-  document.getElementById('ep-id').value=p.id;
-  document.getElementById('ep-title').value=p.title;
-  document.getElementById('ep-cat').value=p.category;
-  document.getElementById('ep-tags').value=p.tags||'';
-  document.getElementById('ep-body').value=p.body;
-  document.getElementById('ep-imgdata').value=p.image||'';
-  const prev=document.getElementById('ep-prev');
-  if(p.image){ prev.src=p.image; prev.style.display='block'; }
-  else { prev.style.display='none'; }
-  document.getElementById('atab-editpost').style.display='block';
-  switchTab('editpost');
-}
-
-function submitEdit(){
-  const id=parseInt(document.getElementById('ep-id').value);
-  const title=document.getElementById('ep-title').value.trim();
-  const cat=document.getElementById('ep-cat').value;
-  const tags=document.getElementById('ep-tags').value.trim();
-  const body=document.getElementById('ep-body').value.trim();
-  const img=document.getElementById('ep-imgdata').value;
-  if(!title||!body){ toast('Title and content required!'); return; }
-  const posts=getPosts();
-  const i=posts.findIndex(x=>x.id===id); if(i===-1) return;
-  posts[i]={...posts[i],title,category:cat,tags,body,image:img};
-  savePosts(posts);
-  toast('Changes saved!');
-  switchTab('posts');
-}
-
-function delPost(id){
-  savePosts(getPosts().filter(p=>p.id!==parseInt(id)));
-  toast('Deleted.');
-  document.getElementById('atab-editpost').style.display='none';
-  switchTab('posts');
-}
-
-/* ═══════════ SETTINGS ═══════════ */
-function changePass(){
-  const cur=document.getElementById('s-cur').value;
-  const nw=document.getElementById('s-new').value;
-  const cnf=document.getElementById('s-cnf').value;
-  if(cur!==localStorage.getItem(AKEY)){ toast('Wrong current password!'); return; }
-  if(!nw){ toast('New password cannot be empty!'); return; }
-  if(nw!==cnf){ toast('Passwords do not match!'); return; }
-  localStorage.setItem(AKEY,nw);
-  ['s-cur','s-new','s-cnf'].forEach(i=>document.getElementById(i).value='');
-  toast('Password updated!');
-}
-function nukeAll(){ savePosts([]); toast('All posts cleared.'); switchTab('posts'); }
-
-/* ═══════════ TOAST ═══════════ */
-function toast(msg){
+/* ══ TOAST ══ */
+function toast(msg) {
   const t=document.getElementById('toast');
   t.textContent=msg; t.style.display='block';
   clearTimeout(window._tt);
-  window._tt=setTimeout(()=>t.style.display='none',2500);
+  window._tt=setTimeout(()=>t.style.display='none', 2500);
 }
 
-/* ═══════════ SEED SAMPLE DATA ═══════════ */
-(function seed(){
-  if(getPosts().length) return;
-  savePosts([
-    {id:1,category:'weapons',title:'Iron Sword',tags:'sword,common,iron',
-     body:'A basic iron sword used by beginning adventurers.\n\nDamage: 12\nSpeed: Normal\nDurability: 80\n\nCrafted from 2x Iron Ingot and 1x Wooden Handle at the Blacksmith.',
-     image:'',date:'2025-01-01'},
-    {id:2,category:'weapons',title:'Crystal Staff',tags:'staff,magic,rare',
-     body:'A staff imbued with crystal magic. Shoots crystal shards on attack.\n\nDamage: 28 (Magic)\nMana Cost: 15 per shot\nRarity: Rare\n\nFound in the Crystal Caverns as a rare drop from the Shard Golem.',
-     image:'',date:'2025-01-02'},
-    {id:3,category:'armour',title:'Stone Chestplate',tags:'armour,chest,common',
-     body:'A heavy chestplate carved from stone.\n\nDefence: 18\nWeight: Heavy\nSet: Stone Armour\n\nCrafted from 5x Stone Block and 1x Iron Clasp.',
-     image:'',date:'2025-01-03'},
-    {id:4,category:'mobs',title:'Void Lurker',tags:'mob,void,rare',
-     body:'A shadowy creature from the Void Dimension.\n\nHP: 340\nDamage: 35\nBehaviour: Teleports toward player every 3 seconds.\n\nDrop Table:\n- Void Essence (40%)\n- Shadow Gem (10%)\n- Void Sword (2%)',
-     image:'',date:'2025-01-04'},
-    {id:5,category:'locations',title:'Crystal Caverns',tags:'dungeon,crystal,medium',
-     body:'A mid-game dungeon filled with crystal formations.\n\nRecommended Level: 20–30\nBosses: Shard Golem, Crystal Queen\n\nContains the Crystal Staff, the Prism Helmet, and the rare Crystal Key.',
-     image:'',date:'2025-01-05'},
-    {id:6,category:'quests',title:'The First Cube',tags:'main quest,story,chapter 1',
-     body:'The introductory main quest.\n\nObjective: Find the Ancient Cube Engine beneath Starter Village.\n\nSteps:\n1. Speak to Elder Grox in the Town Hall.\n2. Explore the Underground Passage.\n3. Defeat the Cave Troll guardian.\n4. Retrieve the First Cube fragment.\n\nRewards: 500 EXP, Iron Sword, 50 Gold.',
-     image:'',date:'2025-01-06'},
-    {id:7,category:'mechanics',title:'Combat System',tags:'combat,mechanic,core',
-     body:'Cubic RPG uses a turn-initiative system with real-time positioning.\n\nDamage Formula:\nFinal Damage = (Base Attack × Weapon Multiplier) − (Target Defence × 0.6)\n\nCritical hits deal 1.75× base damage.\nDodge chance is calculated from Agility stat.',
-     image:'',date:'2025-01-07'},
-  ]);
-})();
-
-/* ═══════════ INIT ═══════════ */
+/* ══ INIT ══ */
+rebuildMenu();
+rebuildWiki();
 showSec('home');
 </script>
 </body>
