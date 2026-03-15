@@ -100,7 +100,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;background:rep
 /* HEADER IMAGE CAROUSEL */
 .img-carousel{position:relative;margin-bottom:1.4rem;border:var(--bw) solid var(--fg);overflow:hidden;}
 .img-carousel-track{display:flex;transition:transform .3s ease;}
-.img-carousel-track img{width:100%;flex-shrink:0;max-height:340px;object-fit:cover;image-rendering:pixelated;display:block;}
+.img-carousel-track img{width:100%;flex-shrink:0;aspect-ratio:1/1;object-fit:cover;display:block;}
 .carousel-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.7);border:var(--bw) solid var(--fg);color:var(--fg);font-family:var(--font);font-size:10px;padding:.4rem .7rem;cursor:pointer;z-index:10;}
 .carousel-btn:hover{background:var(--fg);color:var(--bg);}
 .carousel-prev{left:6px;}
@@ -145,14 +145,14 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;background:rep
 }
 .gallery-item{position:relative;cursor:pointer;overflow:hidden;border:var(--bw) solid var(--dim2);transition:border-color .1s;}
 .gallery-item:hover{border-color:var(--fg);}
-.gallery-item img{width:100%;display:block;aspect-ratio:1/1;object-fit:cover;image-rendering:pixelated;transition:opacity .1s;}
+.gallery-item img{width:100%;display:block;aspect-ratio:1/1;object-fit:cover;transition:opacity .1s;}
 .gallery-item:hover img{opacity:.85;}
 .gallery-caption{font-size:6px;color:var(--muted);letter-spacing:.08em;padding:.4rem .5rem;line-height:1.6;background:var(--dim);}
 
 /* LIGHTBOX */
 #lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:6000;display:none;align-items:center;justify-content:center;flex-direction:column;gap:1rem;}
 #lightbox.open{display:flex;}
-#lightbox img{max-width:90vw;max-height:80vh;object-fit:contain;border:var(--bw) solid var(--fg);image-rendering:pixelated;}
+#lightbox img{max-width:90vw;max-height:80vh;object-fit:contain;border:var(--bw) solid var(--fg);}
 #lightbox-cap{font-size:8px;color:var(--muted);letter-spacing:.1em;text-align:center;max-width:600px;}
 #lightbox-close{position:absolute;top:1rem;right:1.2rem;background:none;border:var(--bw) solid var(--fg);color:var(--fg);font-family:var(--font);font-size:8px;padding:.4rem .7rem;cursor:pointer;}
 #lightbox-close:hover{background:var(--fg);color:var(--bg);}
@@ -433,9 +433,9 @@ function openArticle(id){
 
 /* ── CAROUSEL ── */
 function buildCarousel(imgs){
-  if(imgs.length===1) return `<div class="img-carousel"><img src="${imgs[0]}" style="width:100%;max-height:340px;object-fit:cover;display:block;image-rendering:pixelated;border:var(--bw) solid var(--fg);"/></div>`;
+  if(imgs.length===1) return `<div class="img-carousel"><img src="${imgs[0]}" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block;border:var(--bw) solid var(--fg);"/></div>`;
   const dots=imgs.map((_,i)=>`<div class="carousel-dot${i===0?' active':''}" onclick="carGoto(this,${i})"></div>`).join('');
-  const slides=imgs.map(src=>`<img src="${src}" style="width:100%;flex-shrink:0;max-height:340px;object-fit:cover;image-rendering:pixelated;"/>`).join('');
+  const slides=imgs.map(src=>`<img src="${src}" style="width:100%;flex-shrink:0;aspect-ratio:1/1;object-fit:cover;"/>`).join('');
   return `<div class="img-carousel" data-idx="0" data-total="${imgs.length}">
     <div class="img-carousel-track">${slides}</div>
     <button class="carousel-btn carousel-prev" onclick="carMove(this,-1)">◀</button>
