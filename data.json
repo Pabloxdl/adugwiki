@@ -1,6 +1,25 @@
 {
-  "title": "Cubic RPG Wiki",
+  "title": "ADUG Wiki",
   "version": 1,
-  "categories": [],
-  "posts": []
+  "categories": [
+    {
+      "id": "mmrbiba9hxd0",
+      "name": "Weapons",
+      "desc": "main thing",
+      "icon": "◆",
+      "image": ""
+    }
+  ],
+  "posts": [
+    {
+      "id": "mmrbk04a36j2",
+      "catId": "mmrbiba9hxd0",
+      "title": "Stick",
+      "tags": "",
+      "body": "default thingy",
+      "image": "",
+      "date": "15.03.2026",
+      "updatedAt": 1773552846452
+    }
+  ]
 }
