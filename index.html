@@ -5,13 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Cubic RPG Wiki</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-<!--
-  CUBIC RPG WIKI — viewer
-  ────────────────────────
-  This file only READS data.json from the same folder.
-  To edit content use editor.html, export data.json, then push both files to GitHub.
-  Font: drop 8bitoperatorJVE.ttf in the same folder for the pixel font.
--->
 <style>
 @font-face{font-family:'8bit';src:url('8bitoperatorJVE.ttf') format('truetype');font-weight:normal;}
 @font-face{font-family:'8bit';src:url('8bitoperatorJVE-Bold.ttf') format('truetype');font-weight:bold;}
@@ -24,27 +17,20 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:10px
 a{color:var(--fg);text-decoration:none;}
 a:hover{text-decoration:underline;}
 button{font-family:var(--font);cursor:pointer;}
-
 body::after{content:'';position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,.015) 3px,rgba(255,255,255,.015) 4px);z-index:9999;}
-
-/* pixel grid on menu only */
 #page-menu::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:16px 16px;z-index:0;}
 
-/* ── LOADING ── */
+/* LOADING */
 #loading{position:fixed;inset:0;background:var(--bg);z-index:8000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;}
 .lcube{width:40px;height:40px;border:var(--bw) solid var(--fg);animation:lspin 1s linear infinite;}
 @keyframes lspin{to{transform:rotate(360deg);}}
 .ltxt{font-size:8px;letter-spacing:.2em;color:var(--muted);animation:lpulse 1s ease-in-out infinite;}
 @keyframes lpulse{0%,100%{opacity:.3;}50%{opacity:1;}}
-
-/* ── ERROR BANNER ── */
 #err-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:7000;background:var(--fg);color:var(--bg);padding:.6rem 1.5rem;font-size:7px;letter-spacing:.1em;text-align:center;line-height:1.8;}
 
-/* ── PAGE SYSTEM ── */
+/* PAGE SYSTEM */
 .page{display:none;}
 .page.active{display:block;}
-
-/* ── MAIN MENU ── */
 #page-menu{min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;position:relative;padding:2rem;}
 #page-menu.active{display:flex;}
 .cube-iso{position:relative;width:72px;height:72px;margin:0 auto 2.5rem;animation:bob 3s ease-in-out infinite;z-index:1;}
@@ -59,7 +45,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;background:rep
 .menu-btn:hover{background:var(--fg);color:var(--bg);}
 .menu-version{position:fixed;bottom:1rem;right:1.2rem;font-size:7px;color:var(--muted);letter-spacing:.1em;z-index:1;}
 
-/* ── WIKI ── */
+/* WIKI LAYOUT */
 #page-wiki{min-height:100vh;display:none;flex-direction:column;}
 #page-wiki.active{display:flex;}
 .topbar{position:sticky;top:0;z-index:200;background:var(--bg);border-bottom:var(--bw) solid var(--fg);display:flex;align-items:center;gap:.8rem;padding:.6rem 1.2rem;flex-wrap:wrap;}
@@ -72,7 +58,6 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;background:rep
 .tb-search input{width:140px;font-size:8px;padding:.35rem .6rem;background:var(--bg);color:var(--fg);border:var(--bw) solid var(--fg);font-family:var(--font);outline:none;}
 .tb-search input:focus{box-shadow:0 0 0 2px var(--fg);}
 .tb-search button{background:var(--fg);color:var(--bg);border:var(--bw) solid var(--fg);font-family:var(--font);font-size:8px;padding:.35rem .7rem;}
-.tb-search button:hover{background:var(--dim);color:var(--fg);}
 .wiki-body{display:flex;flex:1;align-items:flex-start;}
 .wiki-side{width:192px;flex-shrink:0;border-right:var(--bw) solid var(--fg);min-height:calc(100vh - 52px);position:sticky;top:52px;overflow-y:auto;max-height:calc(100vh - 52px);padding:.8rem 0;}
 .ws-head{padding:.4rem 1rem .25rem;font-size:6px;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;border-bottom:1px solid var(--dim2);margin-bottom:.2rem;}
@@ -100,7 +85,8 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;background:rep
 .empty-state .es-icon{font-size:28px;margin-bottom:1rem;display:block;}
 .empty-state .es-title{font-size:9px;letter-spacing:.1em;margin-bottom:.6rem;}
 .empty-state .es-sub{font-size:7px;color:var(--muted);letter-spacing:.08em;line-height:1.8;}
-/* article */
+
+/* ARTICLE VIEW */
 .article-view{display:none;}
 .article-view.active{display:block;animation:fin .12s ease;}
 @keyframes fin{from{opacity:0}to{opacity:1}}
@@ -110,10 +96,71 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;background:rep
 .art-meta{font-size:6px;color:var(--muted);letter-spacing:.12em;margin-bottom:.4rem;}
 .art-h1{font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.6rem;}
 .art-tag{display:inline-block;font-size:6px;border:1px solid var(--fg);padding:.1rem .4rem;letter-spacing:.1em;text-transform:uppercase;margin-right:.3rem;margin-bottom:.2rem;}
-.art-img{width:100%;max-height:300px;object-fit:cover;border:var(--bw) solid var(--fg);image-rendering:pixelated;margin-bottom:1.4rem;}
-.art-nimg{width:100%;height:160px;background:var(--dim);border:var(--bw) solid var(--fg);display:flex;align-items:center;justify-content:center;font-size:7px;color:var(--muted);margin-bottom:1.4rem;}
-.art-body{font-size:8px;line-height:2.1;color:#ccc;white-space:pre-wrap;border-left:var(--bw) solid var(--fg);padding-left:1.2rem;}
-/* search */
+
+/* HEADER IMAGE CAROUSEL */
+.img-carousel{position:relative;margin-bottom:1.4rem;border:var(--bw) solid var(--fg);overflow:hidden;}
+.img-carousel-track{display:flex;transition:transform .3s ease;}
+.img-carousel-track img{width:100%;flex-shrink:0;max-height:340px;object-fit:cover;image-rendering:pixelated;display:block;}
+.carousel-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.7);border:var(--bw) solid var(--fg);color:var(--fg);font-family:var(--font);font-size:10px;padding:.4rem .7rem;cursor:pointer;z-index:10;}
+.carousel-btn:hover{background:var(--fg);color:var(--bg);}
+.carousel-prev{left:6px;}
+.carousel-next{right:6px;}
+.carousel-dots{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px;}
+.carousel-dot{width:8px;height:8px;background:var(--dim2);border:1px solid var(--fg);cursor:pointer;}
+.carousel-dot.active{background:var(--fg);}
+
+/* RICH TEXT BODY */
+.art-body{font-size:9px;line-height:2.1;color:#ccc;margin-bottom:1.8rem;}
+.art-body p{margin-bottom:.9rem;}
+.art-body .rt-quote{
+  border-left:var(--bw) solid var(--fg);
+  padding:.6rem 1rem;margin:.8rem 0;
+  color:var(--muted);font-size:8px;font-style:italic;
+  background:var(--dim);
+}
+.art-body .rt-sm{font-size:7px;}
+.art-body .rt-lg{font-size:12px;}
+.art-body .rt-xl{font-size:15px;}
+
+/* ANIMATED GRADIENT TEXT */
+@keyframes gradAnim{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+.rt-grad{
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  display:inline;
+}
+.rt-grad[data-anim="1"]{
+  background-size:200% 200%;
+  animation:gradAnim 3s ease infinite;
+}
+
+/* GALLERY GRID */
+.art-gallery{margin-bottom:1.8rem;}
+.gallery-title{font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.9rem;border-bottom:1px solid var(--dim2);padding-bottom:.4rem;}
+.gallery-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:3px;
+}
+.gallery-item{position:relative;cursor:pointer;overflow:hidden;border:var(--bw) solid var(--dim2);transition:border-color .1s;}
+.gallery-item:hover{border-color:var(--fg);}
+.gallery-item img{width:100%;display:block;aspect-ratio:1/1;object-fit:cover;image-rendering:pixelated;transition:opacity .1s;}
+.gallery-item:hover img{opacity:.85;}
+.gallery-caption{font-size:6px;color:var(--muted);letter-spacing:.08em;padding:.4rem .5rem;line-height:1.6;background:var(--dim);}
+
+/* LIGHTBOX */
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:6000;display:none;align-items:center;justify-content:center;flex-direction:column;gap:1rem;}
+#lightbox.open{display:flex;}
+#lightbox img{max-width:90vw;max-height:80vh;object-fit:contain;border:var(--bw) solid var(--fg);image-rendering:pixelated;}
+#lightbox-cap{font-size:8px;color:var(--muted);letter-spacing:.1em;text-align:center;max-width:600px;}
+#lightbox-close{position:absolute;top:1rem;right:1.2rem;background:none;border:var(--bw) solid var(--fg);color:var(--fg);font-family:var(--font);font-size:8px;padding:.4rem .7rem;cursor:pointer;}
+#lightbox-close:hover{background:var(--fg);color:var(--bg);}
+#lightbox-nav{display:flex;gap:.5rem;}
+.lb-nav-btn{background:none;border:var(--bw) solid var(--fg);color:var(--fg);font-family:var(--font);font-size:9px;padding:.4rem .9rem;cursor:pointer;}
+.lb-nav-btn:hover{background:var(--fg);color:var(--bg);}
+
+/* SEARCH */
 #search-panel{display:none;}
 #search-panel.active{display:block;}
 .sres-item{border:var(--bw) solid var(--fg);padding:.8rem 1rem;margin-bottom:1px;cursor:pointer;display:flex;align-items:center;gap:.9rem;}
@@ -123,7 +170,8 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;background:rep
 .sres-title{font-size:8px;letter-spacing:.07em;margin-bottom:.25rem;}
 .sres-cat{font-size:6px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
 .sres-none{padding:2.5rem;font-size:8px;color:var(--muted);letter-spacing:.12em;text-align:center;}
-@media(max-width:640px){.wiki-side{display:none;}.card-grid{grid-template-columns:1fr;}}
+
+@media(max-width:640px){.wiki-side{display:none;}.card-grid{grid-template-columns:1fr;}.gallery-grid{grid-template-columns:repeat(2,1fr);}}
 </style>
 </head>
 <body>
@@ -131,10 +179,21 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;background:rep
 <div id="loading"><div class="lcube"></div><div class="ltxt">LOADING WIKI...</div></div>
 <div id="err-banner"></div>
 
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <button id="lightbox-close" onclick="closeLightbox()">✕ CLOSE</button>
+  <img id="lightbox-img" src="" alt=""/>
+  <div id="lightbox-cap"></div>
+  <div id="lightbox-nav">
+    <button class="lb-nav-btn" id="lb-prev" onclick="lbNav(-1)">◀ PREV</button>
+    <button class="lb-nav-btn" id="lb-next" onclick="lbNav(1)">NEXT ▶</button>
+  </div>
+</div>
+
 <!-- MAIN MENU -->
 <div id="page-menu" class="page">
   <div class="cube-iso"><div class="f-top"></div><div class="f-left"></div><div class="f-right"></div></div>
-  <div class="menu-logo" id="menu-logo">CUBIC RPG<span class="sub">▓▓▓ WIKI ▓▓▓</span></div>
+  <div class="menu-logo" id="menu-logo">CUBIC RPG<span class="sub">▓▓▓ WIKI &amp; DATABASE ▓▓▓</span></div>
   <nav class="menu-nav" id="menu-nav">
     <button class="menu-btn" onclick="goWiki('home')">▶  Browse Wiki</button>
     <div id="menu-cat-btns"></div>
@@ -146,9 +205,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;background:rep
 <div id="page-wiki" class="page">
   <header class="topbar">
     <div class="tb-logo" id="tb-logo" onclick="showMenu()">◈ CUBIC RPG WIKI</div>
-    <nav class="tb-nav" id="tb-nav">
-      <button onclick="showSec('home')" id="tnav-home">Home</button>
-    </nav>
+    <nav class="tb-nav" id="tb-nav"><button onclick="showSec('home')" id="tnav-home">Home</button></nav>
     <div class="tb-search">
       <input type="text" id="srch" placeholder="Search..." onkeydown="if(event.key==='Enter')doSearch()"/>
       <button onclick="doSearch()">GO</button>
@@ -168,7 +225,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;background:rep
         <div id="srch-list"></div>
       </div>
       <div class="wiki-sec" id="sec-home">
-        <div class="sec-title" id="home-title">◈ ADUG Wiki</div>
+        <div class="sec-title" id="home-title">◈ Cubic RPG Wiki</div>
         <div class="stats-bar" id="stats-bar"></div>
         <div id="home-content"></div>
       </div>
@@ -180,228 +237,344 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;background:rep
           <div class="art-h1" id="art-h1"></div>
           <div id="art-tags"></div>
         </div>
-        <div id="art-imgwrap"></div>
+        <div id="art-carousel-wrap"></div>
         <div class="art-body" id="art-body"></div>
+        <div id="art-gallery-wrap"></div>
       </div>
     </main>
   </div>
 </div>
 
 <script>
-let DATA = { title:'ADUG Wiki', version:1, categories:[], posts:[] };
-let curSec='home', prevSec='home';
+let DATA={title:'Cubic RPG Wiki',version:1,categories:[],posts:[],gradientProfiles:[]};
+let curSec='home',prevSec='home';
+let lbItems=[],lbIndex=0;
 
-/* ── LOAD data.json ── */
-async function init() {
-  try {
-    const r = await fetch('data.json?v=' + Date.now());
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    DATA = await r.json();
-  } catch(e) {
-    showBanner('Could not load data.json — ' + e.message + '. Make sure data.json is in the same folder.');
+/* ── LOAD ── */
+async function init(){
+  try{
+    const r=await fetch('data.json?v='+Date.now());
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    DATA=await r.json();
+  }catch(e){
+    const b=document.getElementById('err-banner');
+    b.textContent='⚠ Could not load data.json — '+e.message;
+    b.style.display='block';
   }
-  document.getElementById('loading').style.display = 'none';
-  buildUI();
-  showMenu();
+  document.getElementById('loading').style.display='none';
+  buildUI(); showMenu();
 }
 
-function showBanner(msg) {
-  const b = document.getElementById('err-banner');
-  b.textContent = '⚠ ' + msg;
-  b.style.display = 'block';
-}
+function buildUI(){
+  const t=DATA.title||'Cubic RPG Wiki';
+  document.title=t;
+  document.getElementById('tb-logo').textContent='◈ '+t.toUpperCase();
+  document.getElementById('home-title').textContent='◈ '+t;
+  document.getElementById('menu-ver').textContent='v'+(DATA.version||1)+' — '+t.toUpperCase();
+  document.getElementById('menu-logo').childNodes[0].textContent=t.toUpperCase();
 
-/* ── BUILD ALL UI FROM DATA ── */
-function buildUI() {
-  const t = DATA.title || 'ADUG Wiki';
-  document.title = t;
-  document.getElementById('tb-logo').textContent   = '◈ ' + t.toUpperCase();
-  document.getElementById('home-title').textContent = '◈ ' + t;
-  document.getElementById('menu-ver').textContent   = 'v' + (DATA.version||1) + ' — ' + t.toUpperCase();
-  document.getElementById('menu-logo').childNodes[0].textContent = t.toUpperCase();
-
-  // menu cat buttons
-  const mcb = document.getElementById('menu-cat-btns');
-  mcb.innerHTML = '';
-  DATA.categories.forEach(cat => {
-    const b = document.createElement('button');
-    b.className   = 'menu-btn';
-    b.textContent = '▶  ' + (cat.icon||'') + ' ' + cat.name;
-    b.onclick     = () => goWiki('cat-' + cat.id);
+  const mcb=document.getElementById('menu-cat-btns'); mcb.innerHTML='';
+  DATA.categories.forEach(cat=>{
+    const b=document.createElement('button');
+    b.className='menu-btn';
+    b.textContent='▶  '+(cat.icon||'')+' '+cat.name;
+    b.onclick=()=>goWiki('cat-'+cat.id);
     mcb.appendChild(b);
   });
 
-  // topbar nav
-  const tnav = document.getElementById('tb-nav');
-  tnav.innerHTML = '<button onclick="showSec(\'home\')" id="tnav-home">Home</button>';
-  DATA.categories.forEach(cat => {
-    const b = document.createElement('button');
-    b.id        = 'tnav-cat-' + cat.id;
-    b.textContent = (cat.icon||'') + ' ' + cat.name;
-    b.onclick   = () => showSec('cat-' + cat.id);
-    tnav.appendChild(b);
+  const tnav=document.getElementById('tb-nav');
+  tnav.innerHTML='<button onclick="showSec(\'home\')" id="tnav-home">Home</button>';
+  DATA.categories.forEach(cat=>{
+    const b=document.createElement('button');
+    b.id='tnav-cat-'+cat.id; b.textContent=(cat.icon||'')+' '+cat.name;
+    b.onclick=()=>showSec('cat-'+cat.id); tnav.appendChild(b);
   });
 
-  // sidebar
-  const sc = document.getElementById('side-cats');
-  sc.innerHTML = '';
-  if (DATA.categories.length) {
-    const h = document.createElement('div');
-    h.className = 'ws-head'; h.textContent = 'Categories';
-    sc.appendChild(h);
-    DATA.categories.forEach(cat => {
-      const a = document.createElement('a');
-      a.href        = '#';
-      a.id          = 'sl-cat-' + cat.id;
-      a.textContent = (cat.icon||'◆') + ' ' + cat.name;
-      a.onclick     = e => { e.preventDefault(); showSec('cat-' + cat.id); };
-      sc.appendChild(a);
+  const sc=document.getElementById('side-cats'); sc.innerHTML='';
+  if(DATA.categories.length){
+    const h=document.createElement('div'); h.className='ws-head'; h.textContent='Categories'; sc.appendChild(h);
+    DATA.categories.forEach(cat=>{
+      const a=document.createElement('a'); a.href='#'; a.id='sl-cat-'+cat.id;
+      a.textContent=(cat.icon||'◆')+' '+cat.name;
+      a.onclick=e=>{e.preventDefault();showSec('cat-'+cat.id);}; sc.appendChild(a);
     });
   }
 
-  // dynamic sections
-  const ds = document.getElementById('dynamic-sections');
-  ds.innerHTML = '';
-  DATA.categories.forEach(cat => {
-    const sec = document.createElement('div');
-    sec.className = 'wiki-sec';
-    sec.id        = 'sec-cat-' + cat.id;
-    sec.innerHTML = `
-      <div class="sec-title">${cat.icon||''} ${cat.name}</div>
-      ${cat.desc ? `<div style="font-size:8px;color:var(--muted);letter-spacing:.08em;margin-bottom:1.5rem;line-height:1.8">${cat.desc}</div>` : ''}
+  const ds=document.getElementById('dynamic-sections'); ds.innerHTML='';
+  DATA.categories.forEach(cat=>{
+    const sec=document.createElement('div'); sec.className='wiki-sec'; sec.id='sec-cat-'+cat.id;
+    sec.innerHTML=`<div class="sec-title">${cat.icon||''} ${cat.name}</div>
+      ${cat.desc?`<div style="font-size:8px;color:var(--muted);letter-spacing:.08em;margin-bottom:1.5rem;line-height:1.8">${cat.desc}</div>`:''}
       <div class="card-grid" id="grid-cat-${cat.id}"></div>`;
     ds.appendChild(sec);
   });
 }
 
 /* ── ROUTING ── */
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-function showMenu()   { showPage('page-menu'); }
-function goWiki(sec)  { showPage('page-wiki'); showSec(sec); }
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function showMenu(){showPage('page-menu');}
+function goWiki(sec){showPage('page-wiki');showSec(sec);}
 
-/* ── SECTIONS ── */
-function showSec(name) {
-  const sp = document.getElementById('search-panel');
-  sp.classList.remove('active'); sp.style.display='none';
+function showSec(name){
+  const sp=document.getElementById('search-panel'); sp.classList.remove('active'); sp.style.display='none';
   document.getElementById('article-view').classList.remove('active');
   document.querySelectorAll('.wiki-sec').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.tb-nav button').forEach(b=>b.classList.remove('anav'));
   document.querySelectorAll('.wiki-side a').forEach(a=>a.classList.remove('alink'));
-  const sec = document.getElementById('sec-'+name);
-  if (sec) sec.classList.add('active');
-  const tn  = document.getElementById('tnav-'+name);
-  if (tn) tn.classList.add('anav');
-  const sl  = document.getElementById('sl-'+name);
-  if (sl) sl.classList.add('alink');
-  curSec = name;
-  renderSec(name);
+  const sec=document.getElementById('sec-'+name); if(sec) sec.classList.add('active');
+  const tn=document.getElementById('tnav-'+name); if(tn) tn.classList.add('anav');
+  const sl=document.getElementById('sl-'+name); if(sl) sl.classList.add('alink');
+  curSec=name; renderSec(name);
 }
 
-function renderSec(name) {
-  if (name==='home') { renderHome(); return; }
-  if (name.startsWith('cat-')) renderCatSec(name.replace('cat-',''));
+function renderSec(name){
+  if(name==='home'){renderHome();return;}
+  if(name.startsWith('cat-'))renderCatSec(name.replace('cat-',''));
 }
 
-function renderHome() {
-  const cats  = DATA.categories;
-  const posts = DATA.posts;
-  const bar   = document.getElementById('stats-bar');
-  if (cats.length) {
+function renderHome(){
+  const cats=DATA.categories,posts=DATA.posts;
+  const bar=document.getElementById('stats-bar');
+  if(cats.length){
     bar.style.background='var(--fg)';
-    bar.innerHTML = `<div class="stat-c"><span class="stat-n">${posts.length}</span><span class="stat-l">Total Posts</span></div>`
-      + cats.map(c=>`<div class="stat-c"><span class="stat-n">${posts.filter(p=>p.catId===c.id).length}</span><span class="stat-l">${c.name}</span></div>`).join('');
-  } else { bar.style.background='none'; bar.innerHTML=''; }
-
-  const content = document.getElementById('home-content');
-  if (!cats.length) {
-    content.innerHTML=`<div class="empty-state"><span class="es-icon">▓</span><div class="es-title">Wiki is empty</div><div class="es-sub">No content yet.<br>Use editor.html to create categories and posts,<br>then export data.json to this folder.</div></div>`;
+    bar.innerHTML=`<div class="stat-c"><span class="stat-n">${posts.length}</span><span class="stat-l">Total Posts</span></div>`
+      +cats.map(c=>`<div class="stat-c"><span class="stat-n">${posts.filter(p=>p.catId===c.id).length}</span><span class="stat-l">${c.name}</span></div>`).join('');
+  }else{bar.style.background='none';bar.innerHTML='';}
+  const content=document.getElementById('home-content');
+  if(!cats.length){
+    content.innerHTML=`<div class="empty-state"><span class="es-icon">▓</span><div class="es-title">Wiki is empty</div><div class="es-sub">Use editor.html to create content,<br>then export data.json here.</div></div>`;
     return;
   }
-  const recent = [...posts].sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)).slice(0,6);
+  const recent=[...posts].sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)).slice(0,6);
   let html='';
-  if (recent.length) html+='<div class="sec-sub">▓ Recently Updated</div><div class="card-grid" id="home-recent"></div>';
+  if(recent.length) html+='<div class="sec-sub">▓ Recently Updated</div><div class="card-grid" id="home-recent"></div>';
   html+='<div class="sec-sub">▓ Categories</div><div class="card-grid">';
   cats.forEach(cat=>{
     const count=posts.filter(p=>p.catId===cat.id).length;
+    const thumb=posts.find(p=>p.catId===cat.id&&(p.headerImages||[]).length);
+    const img=(thumb?.headerImages||[])[0]||'';
     html+=`<div class="wcard" onclick="showSec('cat-${cat.id}')">
-      <div class="wc-icon">${cat.icon||'◆'}</div>
+      ${img?`<img class="wc-img" src="${img}"/>`:`<div class="wc-nimg">${cat.icon||'◆'}</div>`}
       <div class="wc-title">${cat.name}</div>
       <div class="wc-desc">${cat.desc||''}<br><span style="color:var(--muted);font-size:6px">${count} post${count!==1?'s':''}</span></div>
     </div>`;
   });
   html+='</div>';
   content.innerHTML=html;
-  if (recent.length) {
+  if(recent.length){
     const g=document.getElementById('home-recent');
     if(g) recent.forEach(p=>g.appendChild(makeCard(p)));
   }
 }
 
-function renderCatSec(catId) {
-  const posts = DATA.posts.filter(p=>p.catId===catId);
-  const grid  = document.getElementById('grid-cat-'+catId);
-  if (!grid) return;
+function renderCatSec(catId){
+  const posts=DATA.posts.filter(p=>p.catId===catId);
+  const grid=document.getElementById('grid-cat-'+catId); if(!grid) return;
   grid.innerHTML='';
-  if (!posts.length){
+  if(!posts.length){
     grid.style.background='none';
-    grid.innerHTML=`<div class="empty-state" style="border:none"><span class="es-icon">◆</span><div class="es-title">No posts yet</div><div class="es-sub">Add posts in editor.html and re-export data.json.</div></div>`;
+    grid.innerHTML=`<div class="empty-state" style="border:none"><span class="es-icon">◆</span><div class="es-title">No posts yet</div><div class="es-sub">Add posts in editor.html.</div></div>`;
     return;
   }
   grid.style.background='var(--fg)';
   posts.forEach(p=>grid.appendChild(makeCard(p)));
 }
 
-function makeCard(p) {
-  const cat = DATA.categories.find(c=>c.id===p.catId);
-  const d   = document.createElement('div');
-  d.className='wcard'; d.onclick=()=>openArticle(p.id);
-  d.innerHTML=`
-    ${p.image?`<img class="wc-img" src="${p.image}" loading="lazy"/>`:`<div class="wc-nimg">NO IMAGE</div>`}
+function makeCard(p){
+  const cat=DATA.categories.find(c=>c.id===p.catId);
+  const thumb=(p.headerImages||[])[0]||'';
+  const d=document.createElement('div'); d.className='wcard'; d.onclick=()=>openArticle(p.id);
+  d.innerHTML=`${thumb?`<img class="wc-img" src="${thumb}" loading="lazy"/>`:`<div class="wc-nimg">NO IMAGE</div>`}
     <div class="wc-cat">${cat?(cat.icon||'')+' '+cat.name:'Uncategorised'}</div>
     <div class="wc-title">${p.title}</div>
-    <div class="wc-desc">${(p.body||'').substring(0,80)}${(p.body||'').length>80?'…':''}</div>`;
+    <div class="wc-desc">${plainText(p.body||'').substring(0,80)}${plainText(p.body||'').length>80?'…':''}</div>`;
   return d;
 }
 
 /* ── ARTICLE ── */
-function openArticle(id) {
-  const p   = DATA.posts.find(x=>x.id===id); if(!p) return;
-  const cat = DATA.categories.find(c=>c.id===p.catId);
-  prevSec   = curSec;
+function openArticle(id){
+  const p=DATA.posts.find(x=>x.id===id); if(!p) return;
+  const cat=DATA.categories.find(c=>c.id===p.catId);
+  prevSec=curSec;
   document.querySelectorAll('.wiki-sec').forEach(s=>s.classList.remove('active'));
-  const sp=document.getElementById('search-panel');
-  sp.classList.remove('active'); sp.style.display='none';
-  document.getElementById('art-meta').textContent = `${cat?(cat.icon||'')+' '+cat.name.toUpperCase():'UNCATEGORISED'} · ${p.date||''}`;
-  document.getElementById('art-h1').textContent   = p.title;
+  const sp=document.getElementById('search-panel'); sp.classList.remove('active'); sp.style.display='none';
+
+  document.getElementById('art-meta').textContent=`${cat?(cat.icon||'')+' '+cat.name.toUpperCase():'UNCATEGORISED'} · ${p.date||''}`;
+  document.getElementById('art-h1').textContent=p.title;
   const tags=(p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
-  document.getElementById('art-tags').innerHTML   = tags.map(t=>`<span class="art-tag">${t}</span>`).join('');
-  document.getElementById('art-imgwrap').innerHTML= p.image?`<img class="art-img" src="${p.image}" alt="${p.title}"/>`:`<div class="art-nimg">NO IMAGE</div>`;
-  document.getElementById('art-body').textContent = p.body||'';
-  document.getElementById('art-back').onclick     = ()=>{ document.getElementById('article-view').classList.remove('active'); showSec(prevSec); };
+  document.getElementById('art-tags').innerHTML=tags.map(t=>`<span class="art-tag">${t}</span>`).join('');
+
+  // header images carousel
+  const carWrap=document.getElementById('art-carousel-wrap');
+  const imgs=p.headerImages||[];
+  if(imgs.length){
+    carWrap.innerHTML=buildCarousel(imgs);
+    initCarousel(carWrap.querySelector('.img-carousel'));
+  } else {
+    carWrap.innerHTML='';
+  }
+
+  // rich text body
+  document.getElementById('art-body').innerHTML=renderRichText(p.body||'', DATA.gradientProfiles||[]);
+
+  // gallery
+  const galWrap=document.getElementById('art-gallery-wrap');
+  const galItems=p.gallery||[];
+  if(galItems.length){
+    galWrap.innerHTML=buildGallery(galItems);
+  } else {
+    galWrap.innerHTML='';
+  }
+
+  document.getElementById('art-back').onclick=()=>{document.getElementById('article-view').classList.remove('active');showSec(prevSec);};
   document.getElementById('article-view').classList.add('active');
   window.scrollTo(0,0);
 }
 
+/* ── CAROUSEL ── */
+function buildCarousel(imgs){
+  if(imgs.length===1) return `<div class="img-carousel"><img src="${imgs[0]}" style="width:100%;max-height:340px;object-fit:cover;display:block;image-rendering:pixelated;border:var(--bw) solid var(--fg);"/></div>`;
+  const dots=imgs.map((_,i)=>`<div class="carousel-dot${i===0?' active':''}" onclick="carGoto(this,${i})"></div>`).join('');
+  const slides=imgs.map(src=>`<img src="${src}" style="width:100%;flex-shrink:0;max-height:340px;object-fit:cover;image-rendering:pixelated;"/>`).join('');
+  return `<div class="img-carousel" data-idx="0" data-total="${imgs.length}">
+    <div class="img-carousel-track">${slides}</div>
+    <button class="carousel-btn carousel-prev" onclick="carMove(this,-1)">◀</button>
+    <button class="carousel-btn carousel-next" onclick="carMove(this,1)">▶</button>
+    <div class="carousel-dots">${dots}</div>
+  </div>`;
+}
+function initCarousel(el){if(!el) return;}
+function carMove(btn,dir){
+  const car=btn.closest('.img-carousel');
+  let idx=parseInt(car.dataset.idx||0);
+  const total=parseInt(car.dataset.total||1);
+  idx=(idx+dir+total)%total;
+  carGotoIdx(car,idx);
+}
+function carGoto(dot,idx){
+  const car=dot.closest('.img-carousel');
+  carGotoIdx(car,idx);
+}
+function carGotoIdx(car,idx){
+  car.dataset.idx=idx;
+  car.querySelector('.img-carousel-track').style.transform=`translateX(-${idx*100}%)`;
+  car.querySelectorAll('.carousel-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+}
+
+/* ── GALLERY ── */
+function buildGallery(items){
+  const lbData=JSON.stringify(items.map(i=>({src:i.image,cap:i.caption||''}))).replace(/"/g,'&quot;');
+  let html=`<div class="art-gallery"><div class="gallery-title">▓ Gallery (${items.length})</div><div class="gallery-grid">`;
+  items.forEach((item,i)=>{
+    html+=`<div class="gallery-item" onclick="openLightbox(${i},${lbData.replace(/&quot;/g,"'")})" >
+      <img src="${item.image}" loading="lazy" alt="${item.caption||''}"/>
+      ${item.caption?`<div class="gallery-caption">${item.caption}</div>`:''}
+    </div>`;
+  });
+  html+='</div></div>';
+  return html;
+}
+
+/* ── LIGHTBOX ── */
+function openLightbox(idx, items){
+  lbItems=items; lbIndex=idx;
+  updateLightbox();
+  document.getElementById('lightbox').classList.add('open');
+}
+function updateLightbox(){
+  const item=lbItems[lbIndex]||{};
+  document.getElementById('lightbox-img').src=item.src||'';
+  document.getElementById('lightbox-cap').textContent=item.cap||'';
+  document.getElementById('lb-prev').style.display=lbItems.length>1?'':'none';
+  document.getElementById('lb-next').style.display=lbItems.length>1?'':'none';
+}
+function lbNav(dir){lbIndex=(lbIndex+dir+lbItems.length)%lbItems.length;updateLightbox();}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('open');lbItems=[];lbIndex=0;}
+document.getElementById('lightbox').addEventListener('click',e=>{if(e.target===document.getElementById('lightbox'))closeLightbox();});
+window.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox();if(e.key==='ArrowLeft')lbNav(-1);if(e.key==='ArrowRight')lbNav(1);});
+
+/* ── RICH TEXT RENDERER ── */
+function renderRichText(body, gradProfiles){
+  if(!body) return '';
+  // body is stored as JSON array of blocks
+  let blocks;
+  try{ blocks=JSON.parse(body); }catch{ return `<p>${escHtml(body)}</p>`; }
+  return blocks.map(b=>renderBlock(b,gradProfiles)).join('');
+}
+
+function renderBlock(b, gradProfiles){
+  if(b.type==='paragraph'){
+    const content=renderInlines(b.content||[],gradProfiles);
+    return `<p>${content}</p>`;
+  }
+  if(b.type==='quote'){
+    const content=renderInlines(b.content||[],gradProfiles);
+    return `<div class="rt-quote">${content}</div>`;
+  }
+  return '';
+}
+
+function renderInlines(inlines, gradProfiles){
+  return inlines.map(node=>{
+    if(typeof node==='string') return escHtml(node);
+    if(node.type==='text'){
+      let html=escHtml(node.text||'');
+      const cls=[];
+      const styles=[];
+      if(node.size==='sm') cls.push('rt-sm');
+      if(node.size==='lg') cls.push('rt-lg');
+      if(node.size==='xl') cls.push('rt-xl');
+      if(node.bold) html=`<strong>${html}</strong>`;
+      if(node.italic) html=`<em>${html}</em>`;
+      if(node.gradientId){
+        const prof=gradProfiles.find(g=>g.id===node.gradientId);
+        if(prof){
+          const bg=buildGradientCSS(prof);
+          const anim=prof.animated?'1':'0';
+          return `<span class="rt-grad" data-anim="${anim}" style="background:${bg}">${html}</span>`;
+        }
+      }
+      if(node.color) styles.push(`color:${node.color}`);
+      if(cls.length||styles.length){
+        return `<span${cls.length?' class="'+cls.join(' ')+'"':''}${styles.length?' style="'+styles.join(';')+'"':''}>${html}</span>`;
+      }
+      return html;
+    }
+    return '';
+  }).join('');
+}
+
+function buildGradientCSS(prof){
+  const stops=(prof.stops||[]).map(s=>s.color).join(',');
+  const angle=prof.angle||90;
+  if(prof.animated){
+    return `linear-gradient(${angle}deg,${stops})`;
+  }
+  return `linear-gradient(${angle}deg,${stops})`;
+}
+
+/* ── UTILS ── */
+function plainText(body){
+  try{const b=JSON.parse(body);return b.map(bl=>(bl.content||[]).map(n=>typeof n==='string'?n:(n.text||'')).join('')).join(' ');}
+  catch{return body||'';}
+}
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
 /* ── SEARCH ── */
-function doSearch() {
+function doSearch(){
   const q=document.getElementById('srch').value.trim().toLowerCase(); if(!q) return;
   document.querySelectorAll('.wiki-sec').forEach(s=>s.classList.remove('active'));
   document.getElementById('article-view').classList.remove('active');
-  const sp=document.getElementById('search-panel');
-  sp.style.display='block'; sp.classList.add('active');
+  const sp=document.getElementById('search-panel'); sp.style.display='block'; sp.classList.add('active');
   document.getElementById('srch-q').textContent=`"${q}"`;
-  const res=DATA.posts.filter(p=>(p.title||'').toLowerCase().includes(q)||(p.body||'').toLowerCase().includes(q)||(p.tags||'').toLowerCase().includes(q));
+  const res=DATA.posts.filter(p=>(p.title||'').toLowerCase().includes(q)||plainText(p.body||'').toLowerCase().includes(q)||(p.tags||'').toLowerCase().includes(q));
   const list=document.getElementById('srch-list');
   if(!res.length){list.innerHTML='<div class="sres-none">NO RESULTS FOUND</div>';return;}
   list.innerHTML='';
   res.forEach(p=>{
     const cat=DATA.categories.find(c=>c.id===p.catId);
-    const d=document.createElement('div');
-    d.className='sres-item'; d.onclick=()=>openArticle(p.id);
-    d.innerHTML=`${p.image?`<img class="sres-thumb" src="${p.image}"/>`:`<div class="sres-nthumb">IMG</div>`}
+    const d=document.createElement('div'); d.className='sres-item'; d.onclick=()=>openArticle(p.id);
+    d.innerHTML=`${(p.headerImages||[]).length?`<img class="sres-thumb" src="${p.headerImages[0]}"/>`:`<div class="sres-nthumb">IMG</div>`}
       <div><div class="sres-title">${p.title}</div><div class="sres-cat">${cat?(cat.icon||'')+' '+cat.name:'No category'}</div></div>`;
     list.appendChild(d);
   });
